@@ -47,8 +47,7 @@ export const useLayout = () => {
     });
 
     const nodes = nodesEdges.nodes.filter((node) => targetIds.has(node.id) || sourceIds.has(node.id));
-    console.log(nodes);
-    console.log(nodesEdges.edges);
+
     return getLayoutedElements(nodes, nodesEdges.edges);
   }, [nodesEdges.edges, nodesEdges.nodes]);
 

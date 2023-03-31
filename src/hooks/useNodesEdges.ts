@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { Edge, Node } from 'reactflow';
-import { Item, ItemId, Kind, NodeType, isGroup, isProduct, truthy } from '../types/item';
+import { Item, ItemId, Kind, NodeType, isCluster, isGroup, isProduct, truthy } from '../types/item';
 import useItems from './useItems';
 const edgeType = 'smoothstep';
+const rooltId = 'root';
 
 const getType = (itemKind: Kind) => {
   switch (itemKind) {
     case Kind.CLUSTER:
-      return NodeType.INPUT;
+      return NodeType.DEFAULT;
     case Kind.GROUP:
       return NodeType.DEFAULT;
     case Kind.ITEM:
@@ -24,12 +25,20 @@ export const useNodesEdges = () => {
   const { items } = useItems();
 
   const nodes = useMemo<Node<Item>[]>(() => {
-    return items.map((item) => ({
-      id: item.uuid,
-      type: getType(item.kind),
-      data: { ...item, label: item.name },
-      position: { x: 0, y: 0 },
-    }));
+    return [
+      {
+        id: rooltId,
+        type: NodeType.INPUT,
+        data: { label: rooltId } as any,
+        position: { x: 0, y: 0 },
+      },
+      ...items.map((item) => ({
+        id: item.uuid,
+        type: getType(item.kind),
+        data: { ...item, label: item.name },
+        position: { x: 0, y: 0 },
+      })),
+    ];
   }, [items]);
 
   const edges = useMemo<Edge[]>(() => {
@@ -46,8 +55,17 @@ export const useNodesEdges = () => {
       }
     });
 
-    return items
-      .map((item) => {
+    const clusters = items.filter(isCluster);
+
+    return [
+      ...clusters.map((cluster) => ({
+        id: `e${cluster.uuid}${rooltId}`,
+        target: cluster.uuid,
+        source: rooltId,
+        type: edgeType,
+        animated: true,
+      })),
+      ...items.map((item) => {
         const itemId = item.uuid;
         const itemParentId = parentsMap.get(itemId);
         if (!itemParentId) return;
@@ -58,8 +76,8 @@ export const useNodesEdges = () => {
           type: edgeType,
           animated: true,
         };
-      })
-      .filter(truthy);
+      }),
+    ].filter(truthy);
   }, [items]);
   return { nodes, edges };
 };
