@@ -4,41 +4,27 @@ export enum Kind {
   ITEM = 'ITEM',
 }
 
-export type Item =
-  | {
-      kind: Kind.ITEM;
-      uuid: string;
-      groupUuid: string | null;
-      important: boolean;
-      name: string;
-      description: string;
-    }
-  | {
-      kind: Kind.GROUP;
-      uuid: string;
-      clusterUuid: string;
-      name: string;
-    }
-  | {
-      kind: Kind.CLUSTER;
-      uuid: string;
-      name: string;
-    };
+export type Item = ClusterItem | GroupItem | ProductItem;
 
-interface ClusterItem {
+export type History = {
+  beforeChangeItem: Item;
+  afterChangeItem: Item;
+};
+
+export interface ClusterItem {
   kind: Kind.CLUSTER;
   uuid: string;
   name: string;
 }
 
-interface GroupItem {
+export interface GroupItem {
   kind: Kind.GROUP;
   uuid: string;
   clusterUuid: string;
   name: string;
 }
 
-interface ProductItem {
+export interface ProductItem {
   kind: Kind.ITEM;
   uuid: string;
   groupUuid: string | null;

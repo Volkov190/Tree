@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../app/store';
 
 import { selectItem } from '../slices/selectedItem';
-import { Item } from '../types/item';
+import { changeItem as changeItemStore } from '../slices/items';
+import { Item, ProductItem } from '../types/item';
 
 const useItems = () => {
   const { value: items } = useSelector((state: RootState) => state.items);
@@ -17,10 +18,19 @@ const useItems = () => {
     [dispatch],
   );
 
+  const undoLastChange = useCallback(() => {
+    dispatch(undoLastChange);
+  }, [dispatch]);
+
+  const changeProductItem = useCallback((beforeItem: ProductItem, afterItem: Partial<ProductItem>) => {
+    dispatch(changeItemStore({ beforeChangeItem: beforeItem, afterChangeItem: { ...beforeItem, ...afterItem } }));
+  }, []);
+
   return {
     items,
     selectedItem,
     onSelectItem,
+    changeProductItem,
   };
 };
 
