@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.layoutflow {
+  flex-direction: column;
+  display: flex;
+  flex-grow: 1;
+  height: 100vh;
+}
+
+.container .reactflow-wrapper {
+  flex-grow: 1;
+  height: 100%;
+}
