@@ -1,0 +1,8 @@
+{
+  "extends": ["plugin:@web-bee-ru/base", "plugin:@web-bee-ru/react"],
+  "rules": {
+    "unicorn/filename-case": ["off"],
+    "no-console": "off",
+    "react/react-in-jsx-scope": "off"
+  }
+}
