@@ -1,0 +1,65 @@
+import { useMemo } from 'react';
+import { Edge, Node } from 'reactflow';
+import { Item, ItemId, Kind, NodeType, isGroup, isProduct, truthy } from '../types/item';
+import useItems from './useItems';
+const edgeType = 'smoothstep';
+
+const getType = (itemKind: Kind) => {
+  switch (itemKind) {
+    case Kind.CLUSTER:
+      return NodeType.INPUT;
+    case Kind.GROUP:
+      return NodeType.DEFAULT;
+    case Kind.ITEM:
+      return NodeType.OUTPUT;
+
+    default: {
+      const errorType: never = itemKind;
+      console.error(`Неизвестный тип элемента ${errorType}`);
+    }
+  }
+};
+
+export const useNodesEdges = () => {
+  const { items } = useItems();
+
+  const nodes = useMemo<Node<Item>[]>(() => {
+    return items.map((item) => ({
+      id: item.uuid,
+      type: getType(item.kind),
+      data: { ...item, label: item.name },
+      position: { x: 0, y: 0 },
+    }));
+  }, [items]);
+
+  const edges = useMemo<Edge[]>(() => {
+    const parentsMap = new Map<ItemId, ItemId>();
+
+    items.forEach((item) => {
+      if (isProduct(item) && item.groupUuid) {
+        parentsMap.set(item.uuid, item.groupUuid);
+        return;
+      }
+      if (isGroup(item) && item.clusterUuid) {
+        parentsMap.set(item.uuid, item.clusterUuid);
+        return;
+      }
+    });
+
+    return items
+      .map((item) => {
+        const itemId = item.uuid;
+        const itemParentId = parentsMap.get(itemId);
+        if (!itemParentId) return;
+        return {
+          id: `e${itemId}${itemParentId}`,
+          target: itemId,
+          source: itemParentId,
+          type: edgeType,
+          animated: true,
+        };
+      })
+      .filter(truthy);
+  }, [items]);
+  return { nodes, edges };
+};

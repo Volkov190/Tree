@@ -24,6 +24,7 @@ const useItems = () => {
 
   const changeProductItem = useCallback((beforeItem: ProductItem, afterItem: Partial<ProductItem>) => {
     dispatch(changeItemStore({ beforeChangeItem: beforeItem, afterChangeItem: { ...beforeItem, ...afterItem } }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

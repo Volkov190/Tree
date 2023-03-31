@@ -4,6 +4,12 @@ export enum Kind {
   ITEM = 'ITEM',
 }
 
+export enum NodeType {
+  INPUT = 'input',
+  DEFAULT = 'default',
+  OUTPUT = 'output',
+}
+
 export type Item = ClusterItem | GroupItem | ProductItem;
 
 export type History = {
@@ -54,3 +60,9 @@ export const isGroupedProduct = (item: Item): item is GroupedProductItem => {
 };
 
 export type Items = Item[];
+
+type Falsy = false | 0 | '' | null | undefined;
+
+export const truthy = <T>(x: T | Falsy): x is T => !!x;
+
+export type ItemId = Item['uuid'];
