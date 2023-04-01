@@ -9,7 +9,7 @@ import TopDrawer from './TopDrawer';
 
 const Tree: FC = () => {
   const layout = useLayout();
-  
+
   const [nodes, setNodes, onNodesChange] = useNodesState<Item>([]);
   useEffect(() => {
     setNodes(layout.nodes);
@@ -27,21 +27,21 @@ const Tree: FC = () => {
   );
 
   return (
-      <>
-        <TopDrawer />
-        <div className="layoutflow">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            connectionLineType={ConnectionLineType.SmoothStep}
-            fitView
-            nodesDraggable={false}
-          />
-        </div>
-      </>
+    <>
+      <TopDrawer />
+      <div className="layoutflow">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          connectionLineType={ConnectionLineType.SmoothStep}
+          fitView
+          nodesDraggable={false}
+        />
+      </div>
+    </>
   );
 };
 

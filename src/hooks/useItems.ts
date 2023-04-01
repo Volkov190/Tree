@@ -66,7 +66,6 @@ const useItems = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(itemsWithoutRelations);
   return {
     items,
     itemsWithoutRelations,
