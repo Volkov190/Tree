@@ -4,7 +4,7 @@ import { RootState, AppDispatch } from '../app/store';
 
 import { selectItem } from '../slices/selectedItem';
 import { changeItem as changeItemStore } from '../slices/items';
-import { Item, Kind, ProductItem } from '../types/item';
+import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem } from '../types/item';
 
 const useItems = () => {
   const { value: items } = useSelector((state: RootState) => state.items);
@@ -50,8 +50,16 @@ const useItems = () => {
     ];
   }, [items]);
 
+  const groups = useMemo(() => {
+    return items.filter(isGroup);
+  }, [items]);
+
+  const clusters = useMemo(() => {
+    return items.filter(isCluster);
+  }, [items]);
+
   const onSelectItem = useCallback(
-    (item?: Item) => {
+    (item?: Item | null) => {
       dispatch(selectItem(item));
     },
     [dispatch],
@@ -61,19 +69,30 @@ const useItems = () => {
     dispatch(undoLastChange);
   }, [dispatch]);
 
-  const changeProductItem = useCallback((beforeItem: ProductItem, afterItem: Partial<ProductItem>) => {
-    dispatch(changeItemStore({ beforeChangeItem: beforeItem, afterChangeItem: { ...beforeItem, ...afterItem } }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const changeProductItem = useCallback(
+    (beforeItem: ProductItem, afterItem: Partial<ProductItem>) => {
+      dispatch(changeItemStore({ beforeChangeItem: beforeItem, afterChangeItem: { ...beforeItem, ...afterItem } }));
+    },
+    [dispatch],
+  );
 
-  console.log(itemsWithoutRelations);
+  const changeGroupItem = useCallback(
+    (beforeItem: GroupItem, afterItem: Partial<GroupItem>) => {
+      dispatch(changeItemStore({ beforeChangeItem: beforeItem, afterChangeItem: { ...beforeItem, ...afterItem } }));
+    },
+    [dispatch],
+  );
+
   return {
     items,
+    groups,
+    clusters,
     itemsWithoutRelations,
     itemsWithRelations,
     selectedItem,
     onSelectItem,
     changeProductItem,
+    changeGroupItem,
   };
 };
 
