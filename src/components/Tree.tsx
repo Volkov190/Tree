@@ -5,10 +5,11 @@ import 'reactflow/dist/style.css';
 import { useLayout } from '../hooks/useLayout';
 import '../index.css';
 import { Item } from '../types/item';
+import TopDrawer from './TopDrawer';
 
 const Tree: FC = () => {
   const layout = useLayout();
-
+  
   const [nodes, setNodes, onNodesChange] = useNodesState<Item>([]);
   useEffect(() => {
     setNodes(layout.nodes);
@@ -26,17 +27,21 @@ const Tree: FC = () => {
   );
 
   return (
-    <div className="layoutflow">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionLineType={ConnectionLineType.SmoothStep}
-        fitView
-      />
-    </div>
+      <>
+        <TopDrawer />
+        <div className="layoutflow">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            connectionLineType={ConnectionLineType.SmoothStep}
+            fitView
+            nodesDraggable={false}
+          />
+        </div>
+      </>
   );
 };
 
