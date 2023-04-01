@@ -3,13 +3,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
 }
 
 .layoutflow {
@@ -19,7 +12,23 @@ code {
   height: 100vh;
 }
 
-.container .reactflow-wrapper {
-  flex-grow: 1;
-  height: 100%;
+.react-flow__node{
+  border-radius: 3px;
+  padding: 10px;
+  text-transform: capitalize;
+}
+.react-flow__node.selectable:hover{
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.50);
+}
+
+.react-flow__node-default{
+  border: 1px solid blue;
+}
+
+.react-flow__node-input{
+  border: 2px solid #FF00FF;
+}
+
+.react-flow__handle:hover{
+  background-color: #575452;
 }

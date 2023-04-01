@@ -7,6 +7,7 @@ import { fetchItemsThunk } from './slices/items';
 import Tree from './components/Tree';
 import useItems from './hooks/useItems';
 import Sidebar from './components/Sidebar';
+import TopDrawer from './components/TopDrawer';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,6 +20,7 @@ function App() {
   return (
     <div className="d-flex h-100 w-100">
       <div className="flex-grow-1">
+        <TopDrawer />
         <Tree />
       </div>
       {selectedItem && <Sidebar />}

@@ -26,17 +26,20 @@ const Tree: FC = () => {
   );
 
   return (
-    <div className="layoutflow">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionLineType={ConnectionLineType.SmoothStep}
-        fitView
-      />
-    </div>
+    <>
+      <div className="layoutflow">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          connectionLineType={ConnectionLineType.SmoothStep}
+          fitView
+          nodesDraggable={false}
+        />
+      </div>
+    </>
   );
 };
 

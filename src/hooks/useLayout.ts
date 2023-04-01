@@ -1,11 +1,11 @@
 import * as d3 from 'd3-hierarchy';
 import { useMemo } from 'react';
 import { Edge, Node, Position } from 'reactflow';
-import { Item, ItemId } from '../types/item';
+import {Item, ItemId, Kind} from '../types/item';
 import { useNodesEdges } from './useNodesEdges';
 
 const nodeWidth = 172;
-const nodeHeight = 36;
+const nodeHeight = 26;
 
 const getLayoutedElements = (nodes: Node<Item>[], edges: Edge[]) => {
   if (!nodes.length || !edges.length) return { nodes, edges };
