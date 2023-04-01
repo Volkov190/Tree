@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { Box, styled, Tab, Tabs, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import FakeNode from './FakeNode';
@@ -12,56 +12,76 @@ enum TabValue {
   Clusters = 2,
 }
 
-const TopDrawer = () => {
-  const [showMenu, setShowMenu] = useState(false);
+export const TOP_DRAWER_HEIGHT = 245;
+
+interface TopDrawerProps {
+  isOpen: boolean;
+  setIsOpen: (newValue: boolean) => void;
+  className?: string;
+}
+
+const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
   const [currentTab, setCurrentTab] = useState(TabValue.Products);
   const { itemsWithoutRelations } = useItems();
 
   return (
-    <StyledMenu showMenu={showMenu}>
-      <StyledHeaderMenu>
-        <Tabs value={currentTab} onChange={(_e, newValue) => setCurrentTab(newValue)}>
-          <Tab label="Clusters" />
-          <Tab label="Groups" />
-          <Tab label="Products" />
-        </Tabs>
-        <IconButton onClick={() => setShowMenu(false)} sx={{ marginRight: '5px', width: 48 }}>
-          <CloseIcon />
-        </IconButton>
-      </StyledHeaderMenu>
-      <Box borderBottom={'1px solid rgba(0, 0, 0, 0.12)'} width={'100%'}>
-        {currentTab === TabValue.Products && (
-          <StyledItemsContainer>
-            {itemsWithoutRelations
-              .filter((item) => item.kind === Kind.CLUSTER)
-              .map((item, index) => {
-                return <FakeNode key={index} item={item} />;
-              })}
-          </StyledItemsContainer>
-        )}
-        {currentTab === TabValue.Groups && (
-          <StyledItemsContainer>
-            {itemsWithoutRelations
-              .filter((item) => item.kind === Kind.GROUP)
-              .map((item, index) => {
-                return <FakeNode key={index} item={item} />;
-              })}
-          </StyledItemsContainer>
-        )}
-        {currentTab === TabValue.Clusters && (
-          <StyledItemsContainer>
-            {itemsWithoutRelations
-              .filter((item) => item.kind === Kind.ITEM)
-              .map((item, index) => {
-                return <FakeNode key={index} item={item} />;
-              })}
-          </StyledItemsContainer>
-        )}
-      </Box>
-      <StyledButton onClick={() => setShowMenu((prev) => !prev)} disabled={!itemsWithoutRelations.length}>
-        Не используемые элементы ({itemsWithoutRelations.length})
-      </StyledButton>
-    </StyledMenu>
+    <div className={className}>
+      <StyledMenu showMenu={isOpen}>
+        <StyledHeaderMenu>
+          <Tabs value={currentTab} onChange={(_e, newValue) => setCurrentTab(newValue)}>
+            <Tab label="Clusters" />
+            <Tab label="Groups" />
+            <Tab label="Products" />
+          </Tabs>
+          <IconButton onClick={() => setIsOpen(false)} sx={{ marginRight: '5px', width: 48 }}>
+            <CloseIcon />
+          </IconButton>
+        </StyledHeaderMenu>
+        <Box borderBottom={'1px solid rgba(0, 0, 0, 0.12)'} width={'100%'}>
+          {currentTab === TabValue.Products && (
+            <StyledItemsContainer>
+              {itemsWithoutRelations
+                .filter((item) => item.kind === Kind.CLUSTER)
+                .map((item, index) => {
+                  return (
+                    <>
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                      <FakeNode key={index} item={item} />
+                    </>
+                  );
+                })}
+            </StyledItemsContainer>
+          )}
+          {currentTab === TabValue.Groups && (
+            <StyledItemsContainer>
+              {itemsWithoutRelations
+                .filter((item) => item.kind === Kind.GROUP)
+                .map((item, index) => {
+                  return <FakeNode key={index} item={item} />;
+                })}
+            </StyledItemsContainer>
+          )}
+          {currentTab === TabValue.Clusters && (
+            <StyledItemsContainer>
+              {itemsWithoutRelations
+                .filter((item) => item.kind === Kind.ITEM)
+                .map((item, index) => {
+                  return <FakeNode key={index} item={item} />;
+                })}
+            </StyledItemsContainer>
+          )}
+        </Box>
+        <StyledButton onClick={() => setIsOpen(!isOpen)} disabled={!itemsWithoutRelations.length}>
+          Не используемые элементы ({itemsWithoutRelations.length})
+        </StyledButton>
+      </StyledMenu>
+    </div>
   );
 };
 
@@ -103,7 +123,7 @@ const StyledMenu = styled(Box)<{ showMenu: boolean }>`
   flex-direction: column;
   background: #f5f5f5;
   transition: 0.5s;
-  left: 0;
+  height: ${TOP_DRAWER_HEIGHT}px;
   transform: translateY(${({ showMenu }) => (!showMenu ? '-100%' : 0)});
 `;
 

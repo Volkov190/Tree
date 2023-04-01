@@ -12,6 +12,10 @@ body {
   height: 100vh;
 }
 
+.layoutflow > div {
+  z-index: -1 !important;
+}
+
 .react-flow__node{
   border-radius: 3px;
   padding: 10px;
