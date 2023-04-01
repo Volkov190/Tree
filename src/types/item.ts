@@ -26,7 +26,7 @@ export interface ClusterItem {
 export interface GroupItem {
   kind: Kind.GROUP;
   uuid: string;
-  clusterUuid: string;
+  clusterUuid: string | null;
   name: string;
 }
 
