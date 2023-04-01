@@ -21,6 +21,11 @@
     "name": "Bedfordshire Chair support magnetic"
   },
   {
+    "uuid": "483",
+    "kind": "GROUP",
+    "name": "Test Group Chair support magnetic"
+  },
+  {
     "uuid": "166",
     "kind": "GROUP",
     "clusterUuid": "402",
@@ -49,6 +54,13 @@
     "groupUuid": "166",
     "kind": "ITEM",
     "name": "SMTP technologies card Estates",
+    "description": "Practical Palau Shirt Loan Legacy and copy Markets Designer partnerships Technician Clothing asymmetric Grass-roots Architect alarm payment SQL infomediaries Loan",
+    "important": true
+  },
+  {
+    "uuid": "304",
+    "kind": "ITEM",
+    "name": "SMTPqweewq technologies card Estates",
     "description": "Practical Palau Shirt Loan Legacy and copy Markets Designer partnerships Technician Clothing asymmetric Grass-roots Architect alarm payment SQL infomediaries Loan",
     "important": true
   },
