@@ -5,9 +5,11 @@ import 'reactflow/dist/style.css';
 import { useLayout } from '../hooks/useLayout';
 import '../index.css';
 import { Item } from '../types/item';
+import useItems from '../hooks/useItems';
 
 const Tree: FC = () => {
   const layout = useLayout();
+  const { onSelectItem } = useItems();
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Item>([]);
   useEffect(() => {
@@ -37,6 +39,7 @@ const Tree: FC = () => {
           connectionLineType={ConnectionLineType.SmoothStep}
           fitView
           nodesDraggable={false}
+          onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}
         />
       </div>
     </>
