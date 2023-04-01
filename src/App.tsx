@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import './App.css';
-import 'reactflow/dist/style.css';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from './app/store';
 import { fetchItemsThunk } from './slices/items';
@@ -32,6 +30,7 @@ function App() {
 
 const StyledTopDrawer = styled(TopDrawer)<{ isOpen: boolean }>`
   height: ${({ isOpen }) => (isOpen ? TOP_DRAWER_HEIGHT : 0)}px;
+  transition: height 0.2s;
 `;
 
 export default App;

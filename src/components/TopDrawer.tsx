@@ -114,6 +114,7 @@ const StyledItemsContainer = styled(Box)`
   width: 100%;
   overflow: auto;
   padding: 20px;
+  box-sizing: border-box;
 `;
 
 const StyledMenu = styled(Box)<{ showMenu: boolean }>`
@@ -122,7 +123,7 @@ const StyledMenu = styled(Box)<{ showMenu: boolean }>`
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
-  transition: 0.5s;
+  transition: 0.2s;
   height: ${TOP_DRAWER_HEIGHT}px;
   transform: translateY(${({ showMenu }) => (!showMenu ? '-100%' : 0)});
 `;
@@ -132,4 +133,5 @@ const StyledHeaderMenu = styled(Box)`
   display: flex;
   justify-content: space-between;
   width: 100%;
+  box-sizing: border-box;
 `;
