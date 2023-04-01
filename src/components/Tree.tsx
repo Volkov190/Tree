@@ -6,10 +6,20 @@ import { useLayout } from '../hooks/useLayout';
 import '../index.css';
 import { Item } from '../types/item';
 import useItems from '../hooks/useItems';
+import Button from './Button';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from '../app/store';
+import { undoLastChange } from '../slices/items';
 
 const Tree: FC = () => {
   const layout = useLayout();
   const { onSelectItem } = useItems();
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const undoChanges = useCallback(()=> {
+    dispatch(undoLastChange());
+  }, [dispatch]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Item>([]);
   useEffect(() => {
@@ -27,9 +37,12 @@ const Tree: FC = () => {
     [],
   );
 
+  // const stiledButtons = styled
+
   return (
     <>
       <div className="layoutflow">
+        <Button onClick={()=> undoChanges()}>Undo</Button>
         <ReactFlow
           nodes={nodes}
           edges={edges}
