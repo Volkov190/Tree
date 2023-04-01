@@ -28,21 +28,19 @@ const Tree: FC = () => {
   );
 
   return (
-    <>
-      <div className="layoutflow">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          connectionLineType={ConnectionLineType.SmoothStep}
-          fitView
-          nodesDraggable={false}
-          onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}
-        />
-      </div>
-    </>
+    <div className="layoutflow flex-grow-1">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        connectionLineType={ConnectionLineType.SmoothStep}
+        fitView
+        nodesDraggable={false}
+        onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}
+      />
+    </div>
   );
 };
 
