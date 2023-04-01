@@ -1,10 +1,10 @@
 import Button from '@mui/material/Button';
-import { Dispatch, FC, SetStateAction, useState } from 'react';
-import { Box, styled, Tab, Tabs, IconButton } from '@mui/material';
+import { FC, useMemo, useState } from 'react';
+import { Box, IconButton, styled, Tab, Tabs } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import FakeNode from './FakeNode';
 import useItems from '../hooks/useItems';
-import { Kind } from '../types/item';
+import { Item, Kind } from '../types/item';
+import ItemsContainer from './ItemsContainer';
 
 enum TabValue {
   Products = 0,
@@ -24,60 +24,37 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
   const [currentTab, setCurrentTab] = useState(TabValue.Products);
   const { itemsWithoutRelations } = useItems();
 
+  const importantItems = useMemo(() => itemsWithoutRelations.filter((item) => item.important), [itemsWithoutRelations]);
+
   return (
     <div className={className}>
       <StyledMenu showMenu={isOpen}>
         <StyledHeaderMenu>
           <Tabs value={currentTab} onChange={(_e, newValue) => setCurrentTab(newValue)}>
-            <Tab label="Clusters" />
-            <Tab label="Groups" />
-            <Tab label="Products" />
+            <StyledTab label="Кластеры" importantItems={importantItems} kind={Kind.CLUSTER} />
+            <StyledTab label="Группы" importantItems={importantItems} kind={Kind.GROUP} />
+            <StyledTab label="Продукты" importantItems={importantItems} kind={Kind.ITEM} />
           </Tabs>
           <IconButton onClick={() => setIsOpen(false)} sx={{ marginRight: '5px', width: 48 }}>
             <CloseIcon />
           </IconButton>
         </StyledHeaderMenu>
-        <Box borderBottom={'1px solid rgba(0, 0, 0, 0.12)'} width={'100%'}>
+        <Box width={'100%'}>
           {currentTab === TabValue.Products && (
-            <StyledItemsContainer>
-              {itemsWithoutRelations
-                .filter((item) => item.kind === Kind.CLUSTER)
-                .map((item, index) => {
-                  return (
-                    <>
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                      <FakeNode key={index} item={item} />
-                    </>
-                  );
-                })}
-            </StyledItemsContainer>
+            <ItemsContainer itemsWithoutRelations={itemsWithoutRelations} kind={Kind.CLUSTER} />
           )}
           {currentTab === TabValue.Groups && (
-            <StyledItemsContainer>
-              {itemsWithoutRelations
-                .filter((item) => item.kind === Kind.GROUP)
-                .map((item, index) => {
-                  return <FakeNode key={index} item={item} />;
-                })}
-            </StyledItemsContainer>
+            <ItemsContainer itemsWithoutRelations={itemsWithoutRelations} kind={Kind.GROUP} />
           )}
           {currentTab === TabValue.Clusters && (
-            <StyledItemsContainer>
-              {itemsWithoutRelations
-                .filter((item) => item.kind === Kind.ITEM)
-                .map((item, index) => {
-                  return <FakeNode key={index} item={item} />;
-                })}
-            </StyledItemsContainer>
+            <ItemsContainer itemsWithoutRelations={itemsWithoutRelations} kind={Kind.ITEM} />
           )}
         </Box>
-        <StyledButton onClick={() => setIsOpen(!isOpen)} disabled={!itemsWithoutRelations.length}>
+        <StyledButton
+          onClick={() => setIsOpen(!isOpen)}
+          disabled={!itemsWithoutRelations.length}
+          existsImportantItems={!!importantItems.length}
+        >
           Не используемые элементы ({itemsWithoutRelations.length})
         </StyledButton>
       </StyledMenu>
@@ -87,14 +64,21 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
 
 export default TopDrawer;
 
-const StyledButton = styled(Button)`
+const StyledTab = styled(Tab)<{ importantItems: Item[]; kind: Kind }>`
+  &.Mui-selected,
+  & {
+    color: ${({ importantItems, kind }) => (importantItems[0]?.kind === kind ? 'red' : undefined)};
+  }
+`;
+
+const StyledButton = styled(Button)<{ existsImportantItems: boolean }>`
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(36px);
   z-index: 10;
   border-radius: 0 0 10px 10px;
-  background-color: gray;
+  background-color: ${({ existsImportantItems }) => (existsImportantItems ? 'red' : 'gray')};
   color: white;
 
   &:hover {
@@ -107,16 +91,6 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const StyledItemsContainer = styled(Box)`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: 100%;
-  overflow: auto;
-  padding: 20px;
-  box-sizing: border-box;
-`;
-
 const StyledMenu = styled(Box)<{ showMenu: boolean }>`
   width: 100%;
   align-items: center;
@@ -126,6 +100,7 @@ const StyledMenu = styled(Box)<{ showMenu: boolean }>`
   transition: 0.2s;
   height: ${TOP_DRAWER_HEIGHT}px;
   transform: translateY(${({ showMenu }) => (!showMenu ? '-100%' : 0)});
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 `;
 
 const StyledHeaderMenu = styled(Box)`

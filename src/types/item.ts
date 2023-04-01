@@ -20,12 +20,14 @@ export type History = {
 export interface ClusterItem {
   kind: Kind.CLUSTER;
   uuid: string;
+  important: boolean;
   name: string;
 }
 
 export interface GroupItem {
   kind: Kind.GROUP;
   uuid: string;
+  important: boolean;
   clusterUuid: string | null;
   name: string;
 }

@@ -19,7 +19,12 @@ const FakeNode = ({ item }: FakeNodeProps) => {
   }, [item.kind]);
 
   return (
-    <StyledBox onClick={() => onSelectItem(item)} borderColor={borderColor}>
+    <StyledBox
+      onClick={() => onSelectItem(item)}
+      borderColor={borderColor}
+      color={item.important ? 'red' : undefined}
+      title={item.important ? 'Элемент является значимым' : undefined}
+    >
       {item.name}
     </StyledBox>
   );

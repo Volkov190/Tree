@@ -21,6 +21,10 @@ body {
   z-index: -1 !important;
 }
 
+.react-flow__panel{
+  display: none;
+}
+
 .react-flow__node{
   border-radius: 3px;
   padding: 10px;
