@@ -101,8 +101,6 @@ const StyledMenu = styled(Box)<{ showMenu: boolean }>`
   align-items: center;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  z-index: 10;
   background: #f5f5f5;
   transition: 0.5s;
   left: 0;

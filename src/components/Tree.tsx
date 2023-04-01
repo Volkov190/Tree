@@ -5,7 +5,6 @@ import 'reactflow/dist/style.css';
 import { useLayout } from '../hooks/useLayout';
 import '../index.css';
 import { Item } from '../types/item';
-import TopDrawer from './TopDrawer';
 
 const Tree: FC = () => {
   const layout = useLayout();
@@ -28,7 +27,6 @@ const Tree: FC = () => {
 
   return (
     <>
-      <TopDrawer />
       <div className="layoutflow">
         <ReactFlow
           nodes={nodes}

@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
 import { Box, styled } from '@mui/material';
 import { Item, Kind } from '../types/item';
+import useItems from '../hooks/useItems';
 
 interface FakeNodeProps {
   item: Item;
 }
 
 const FakeNode = ({ item }: FakeNodeProps) => {
+  const { onSelectItem } = useItems();
+
   const borderColor = useMemo(() => {
     if (item.kind === Kind.ITEM) {
       return '#000';
@@ -15,7 +18,11 @@ const FakeNode = ({ item }: FakeNodeProps) => {
     } else return '#FF00FF';
   }, [item.kind]);
 
-  return <StyledBox borderColor={borderColor}>{item.name}</StyledBox>;
+  return (
+    <StyledBox onClick={() => onSelectItem(item)} borderColor={borderColor}>
+      {item.name}
+    </StyledBox>
+  );
 };
 
 const StyledBox = styled(Box)<{ borderColor: string }>`
