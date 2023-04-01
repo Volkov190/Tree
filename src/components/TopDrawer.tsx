@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { Box, styled, Tab, Tabs, IconButton } from '@mui/material';
@@ -7,15 +6,21 @@ import FakeNode from './FakeNode';
 import useItems from '../hooks/useItems';
 import { Kind } from '../types/item';
 
+enum TabValue {
+  Products = 0,
+  Groups = 1,
+  Clusters = 2,
+}
+
 const TopDrawer = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [value, setValue] = useState(0);
+  const [currentTab, setCurrentTab] = useState(TabValue.Products);
   const { itemsWithoutRelations } = useItems();
 
   return (
     <StyledMenu showMenu={showMenu}>
       <StyledHeaderMenu>
-        <Tabs value={value} onChange={(_e, newValue) => setValue(newValue)}>
+        <Tabs value={currentTab} onChange={(_e, newValue) => setCurrentTab(newValue)}>
           <Tab label="Clusters" />
           <Tab label="Groups" />
           <Tab label="Products" />
@@ -25,7 +30,7 @@ const TopDrawer = () => {
         </IconButton>
       </StyledHeaderMenu>
       <Box borderBottom={'1px solid rgba(0, 0, 0, 0.12)'} width={'100%'}>
-        {value === 0 && (
+        {currentTab === TabValue.Products && (
           <StyledItemsContainer>
             {itemsWithoutRelations
               .filter((item) => item.kind === Kind.CLUSTER)
@@ -34,7 +39,7 @@ const TopDrawer = () => {
               })}
           </StyledItemsContainer>
         )}
-        {value === 1 && (
+        {currentTab === TabValue.Groups && (
           <StyledItemsContainer>
             {itemsWithoutRelations
               .filter((item) => item.kind === Kind.GROUP)
@@ -43,7 +48,7 @@ const TopDrawer = () => {
               })}
           </StyledItemsContainer>
         )}
-        {value === 2 && (
+        {currentTab === TabValue.Clusters && (
           <StyledItemsContainer>
             {itemsWithoutRelations
               .filter((item) => item.kind === Kind.ITEM)
@@ -71,9 +76,11 @@ const StyledButton = styled(Button)`
   border-radius: 0 0 10px 10px;
   background-color: gray;
   color: white;
+
   &:hover {
     background-color: darkgray;
   }
+
   &.Mui-disabled {
     color: white;
     background-color: lightgray;
