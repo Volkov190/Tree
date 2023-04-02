@@ -7,6 +7,7 @@ import useItems from './hooks/useItems';
 import Sidebar from './components/Sidebar';
 import TopDrawer, { TOP_DRAWER_HEIGHT } from './components/TopDrawer';
 import styled from 'styled-components';
+import { DEFAULT_TRANSITION } from './const/tree';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,7 +22,7 @@ function App() {
     <div className="d-flex h-100 w-100">
       <div className="flex-grow-1 d-flex flex-column h-100">
         <StyledTopDrawer isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
-        <TreesWrapper className="flex-grow-1 mt-5">
+        <TreesWrapper className="flex-grow-1">
           <ScrollWrapper className="d-flex flex-column align-items-center">
             <Trees />
           </ScrollWrapper>
@@ -38,7 +39,9 @@ const TreesWrapper = styled.div`
 
 const StyledTopDrawer = styled(TopDrawer)<{ isOpen: boolean }>`
   height: ${({ isOpen }) => (isOpen ? TOP_DRAWER_HEIGHT : 0)}px;
-  transition: height 0.2s;
+  transition: height ${DEFAULT_TRANSITION}s;
+  position: relative;
+  z-index: 2;
 `;
 
 const ScrollWrapper = styled.div`

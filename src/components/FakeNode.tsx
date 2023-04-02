@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { Box, styled } from '@mui/material';
 import { Item, Kind } from '../types/item';
 import useItems from '../hooks/useItems';
+import styled from 'styled-components';
 
 interface FakeNodeProps {
   item: Item;
@@ -22,7 +22,7 @@ const FakeNode = ({ item }: FakeNodeProps) => {
     <StyledBox
       onClick={() => onSelectItem(item)}
       borderColor={borderColor}
-      color={item.important ? 'red' : undefined}
+      isImportant={item.important}
       title={item.important ? 'Элемент является значимым' : undefined}
     >
       {item.name}
@@ -30,10 +30,11 @@ const FakeNode = ({ item }: FakeNodeProps) => {
   );
 };
 
-const StyledBox = styled(Box)<{ borderColor: string }>`
+const StyledBox = styled.div<{ borderColor: string; isImportant: boolean }>`
   padding: 10px;
   border: 1px solid ${({ borderColor }) => borderColor};
   border-radius: 3px;
+  color: ${({ isImportant }) => (isImportant ? 'red' : undefined)};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { NODE_HEIGHT, NODE_SCALE, NODE_STEP_HEIGHT, NODE_STEP_WIDTH, NODE_WIDTH } from '../const/tree';
 
 import { useLayout } from '../hooks/useLayout';
-import '../index.css';
 import { isGroup, isProduct, Item, Kind } from '../types/item';
 import useItems from '../hooks/useItems';
 
@@ -126,6 +125,34 @@ const ReactFlowWrapper = styled.div<{ itemCount: number }>`
   height: ${({ itemCount }) =>
     NODE_SCALE * (NODE_HEIGHT * itemCount + NODE_STEP_HEIGHT * (itemCount - 1)) + (itemCount % 1 ? 1 : 0)}px;
   position: relative;
+  .react-flow__panel {
+    display: none;
+  }
+
+  .react-flow__node {
+    border-radius: 3px;
+    padding: 10px;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .react-flow__node.selectable:hover {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+
+  .react-flow__node-default {
+    border: 1px solid blue;
+  }
+
+  .react-flow__node-input {
+    border: 2px solid #ff00ff;
+  }
+
+  .react-flow__handle:hover {
+    background-color: #575452;
+  }
 `;
 
 export default memo(Tree);

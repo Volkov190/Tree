@@ -82,7 +82,7 @@ const Sidebar: FC = () => {
   };
 
   return (
-    <Wrapper className="p-3">
+    <Wrapper className="p-3 flex-shrink-0">
       <CloseIconWrapper>
         <StyledCloseOutline onClick={() => onSelectItem(null)} />
       </CloseIconWrapper>
@@ -113,7 +113,7 @@ const Wrapper = styled.div`
   border-left: 1px solid #d1d1d1;
 `;
 
-const CloseIconWrapper = styled.div`
+export const CloseIconWrapper = styled.div`
   position: absolute;
   top: 8px;
   right: 8px;
@@ -121,7 +121,7 @@ const CloseIconWrapper = styled.div`
   width: 24px;
 `;
 
-const StyledCloseOutline = styled(CloseOutline)`
+export const StyledCloseOutline = styled(CloseOutline)`
   border-radius: 4px;
   cursor: pointer;
 
