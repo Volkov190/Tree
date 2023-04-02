@@ -7,9 +7,10 @@ import '../index.css';
 import { Item } from '../types/item';
 import useItems from '../hooks/useItems';
 import Button from './Button';
-import {useDispatch} from 'react-redux';
-import {AppDispatch} from '../app/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../app/store';
 import { undoLastChange } from '../slices/items';
+import { BackIcon } from '../assets/icons';
 
 const Tree: FC = () => {
   const layout = useLayout();
@@ -17,7 +18,7 @@ const Tree: FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const undoChanges = useCallback(()=> {
+  const undoChanges = useCallback(() => {
     dispatch(undoLastChange());
   }, [dispatch]);
 
@@ -37,12 +38,14 @@ const Tree: FC = () => {
     [],
   );
 
-  // const stiledButtons = styled
-
   return (
     <>
-      <div className="layoutflow">
-        <Button onClick={()=> undoChanges()}>Undo</Button>
+      <div className="layoutflow ">
+        <div className="m-2">
+          <Button onClick={() => undoChanges()} isIconButton>
+            <BackIcon />
+          </Button>
+        </div>
         <ReactFlow
           nodes={nodes}
           edges={edges}

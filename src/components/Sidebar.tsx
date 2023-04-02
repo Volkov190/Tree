@@ -1,10 +1,10 @@
 import { FC, memo, useState, useCallback } from 'react';
 import styled from 'styled-components';
-import CloseOutline from '../assets/icons/CloseOutline';
 import useItems from '../hooks/useItems';
 import { ClusterItem, GroupItem, Kind } from '../types/item';
 import Select from 'react-select';
 import Button from './Button';
+import { CloseOutline } from '../assets/icons';
 
 const Sidebar: FC = () => {
   const { selectedItem, onSelectItem, groups, clusters, changeProductItem, changeGroupItem } = useItems();
