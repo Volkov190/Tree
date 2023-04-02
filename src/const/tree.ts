@@ -6,4 +6,4 @@ export const NODE_HEIGHT = 54;
 export const NODE_STEP_WIDTH = 50;
 export const NODE_STEP_HEIGHT = 10;
 
-export const NODE_SCALE = 2;
+export const NODE_SCALE = 1.4;
