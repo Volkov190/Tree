@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import fetchItems from '../fetchers/fetchItems';
-import { History, Item } from '../types/item';
+import { History, HistoryNode, Item } from '../types/item';
 
 export interface ItemsState {
   initialValue: Item[];
@@ -26,17 +26,19 @@ export const itemsSlice = createSlice({
   name: 'items',
   initialState,
   reducers: {
-    changeItem: (state, action: PayloadAction<History>) => {
+    changeItem: (state, action: PayloadAction<HistoryNode>) => {
       const { beforeChangeItem, afterChangeItem } = action.payload;
 
-      state.value = state.value.map((item) => {
-        if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
-          return afterChangeItem;
-        }
-        return item;
-      });
+      state.value = state.value
+        .map((item) => {
+          if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
+            return afterChangeItem;
+          }
+          return item;
+        })
+        .filter((item): item is Item => item !== null);
       state.selectedItem = afterChangeItem;
-      state.histories = [...state.histories, action.payload];
+      state.histories = [...state.histories, [action.payload]];
     },
 
     selectItem: (state, action: PayloadAction<Item | null | undefined>) => {
@@ -46,12 +48,18 @@ export const itemsSlice = createSlice({
     undoLastChange: (state) => {
       if (!state.histories.length) return;
 
-      const { beforeChangeItem, afterChangeItem } = state.histories[state.histories.length - 1];
-      state.value = state.value.map((item) => {
-        if (item.kind === afterChangeItem.kind && item.uuid === afterChangeItem.uuid) {
-          return beforeChangeItem;
+      const history = state.histories[state.histories.length - 1];
+      history.forEach(({ afterChangeItem, beforeChangeItem }) => {
+        if (afterChangeItem === null) {
+          return (state.value = [...state.value, beforeChangeItem]);
         }
-        return item;
+
+        state.value = state.value.map((item) => {
+          if (item.kind === afterChangeItem.kind && item.uuid === afterChangeItem.uuid) {
+            return beforeChangeItem;
+          }
+          return item;
+        });
       });
       state.histories = state.histories.slice(0, -1);
     },
