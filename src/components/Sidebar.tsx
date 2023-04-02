@@ -196,6 +196,10 @@ const Sidebar: FC = () => {
           <Label>Название:</Label>
           <div className="ps-2">{selectedItem.name}</div>
         </div>
+        <div className="mb-2">
+          <input type="checkbox" readOnly checked={selectedItem.important} />
+          {selectedItem.important ? 'Значимый' : 'Не значимый'}
+        </div>
         <ItemContent />
         <div className="flex-grow-1"></div>
         <div className="d-flex justify-content-end">
