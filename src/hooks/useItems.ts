@@ -2,8 +2,8 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../app/store';
 
-import { selectItem, changeItem, deleteUnimportantItems, undoLastChange } from '../slices/items';
-import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem } from '../types/item';
+import { selectItem, changeItem, deleteUnimportantItems, undoLastChange, changeItems } from '../slices/items';
+import { GroupItem, isCluster, isGroup, isProduct, Item, Kind, ProductItem, History } from '../types/item';
 
 const useItems = () => {
   const { value: items, selectedItem, histories } = useSelector((state: RootState) => state.items);
@@ -46,6 +46,10 @@ const useItems = () => {
       items.filter((item) => itemUuidsWithoutRelation.includes(item.uuid)),
       items.filter((item) => itemUuidsWithRelation.includes(item.uuid)),
     ];
+  }, [items]);
+
+  const products = useMemo(() => {
+    return items.filter(isProduct);
   }, [items]);
 
   const groups = useMemo(() => {
@@ -120,12 +124,19 @@ const useItems = () => {
     [dispatch],
   );
 
+  const onChangeGroupItems = useCallback(
+    (historyItems: History) => {
+      dispatch(changeItems(historyItems));
+    },
+    [dispatch],
+  );
   const onDeleteUnimportantItems = useCallback(() => {
     dispatch(deleteUnimportantItems());
   }, [dispatch]);
 
   return {
     items,
+    products,
     groups,
     clusters,
     itemsWithoutRelations,
@@ -139,6 +150,7 @@ const useItems = () => {
     onChangeGroupItem,
     onDeleteUnimportantItems,
     onUndoLastChange,
+    onChangeGroupItems,
   };
 };
 

@@ -28,7 +28,6 @@ export const itemsSlice = createSlice({
   reducers: {
     changeItem: (state, action: PayloadAction<HistoryNode>) => {
       const { beforeChangeItem, afterChangeItem } = action.payload;
-
       state.value = state.value
         .map((item) => {
           if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
@@ -41,6 +40,24 @@ export const itemsSlice = createSlice({
       state.histories = [...state.histories, [action.payload]];
     },
 
+    changeItems: (state, action: PayloadAction<History>) => {
+      const history = action.payload;
+      history.forEach(({ beforeChangeItem, afterChangeItem }) => {
+        state.value = state.value
+          .map((item) => {
+            if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
+              return afterChangeItem;
+            }
+            return item;
+          })
+          .filter((item): item is Item => item !== null);
+
+        if (state.selectedItem?.uuid === beforeChangeItem.uuid && state.selectedItem?.kind === beforeChangeItem.kind) {
+          state.selectedItem = afterChangeItem;
+        }
+      });
+      state.histories = [...state.histories, history];
+    },
     deleteUnimportantItems: (state) => {
       const unimportantClusters = state.value.filter(isCluster).filter((cluster) => !cluster.important);
       const unimportantGroups = state.value.filter(isGroup).filter((cluster) => !cluster.important);
@@ -119,6 +136,6 @@ export const itemsSlice = createSlice({
   },
 });
 
-export const { changeItem, undoLastChange, selectItem, deleteUnimportantItems } = itemsSlice.actions;
+export const { changeItem, undoLastChange, selectItem, deleteUnimportantItems, changeItems } = itemsSlice.actions;
 
 export default itemsSlice.reducer;
