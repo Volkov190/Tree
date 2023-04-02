@@ -7,6 +7,8 @@ import Button from './Button';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../app/store';
 import { undoLastChange } from '../slices/items';
+import { BackIcon } from '../assets/icons';
+
 const Trees: FC = () => {
   const { trees } = useItems();
 
@@ -18,7 +20,11 @@ const Trees: FC = () => {
 
   return (
     <>
-      <Button onClick={() => undoChanges()}>Undo</Button>
+      <div className="m-2">
+        <Button onClick={() => undoChanges()} isIconButton>
+          <BackIcon />
+        </Button>
+      </div>
       {trees.map((tree, idx) => (
         <ReactFlowProvider key={idx}>
           <Tree tree={tree} className="mb-4" />

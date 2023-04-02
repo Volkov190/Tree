@@ -32,7 +32,6 @@ export const itemsSlice = createSlice({
       state.value = state.value
         .map((item) => {
           if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
-            console.log(afterChangeItem);
             return afterChangeItem;
           }
           return item;
