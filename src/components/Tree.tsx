@@ -87,6 +87,7 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
     <div className={`d-inline-block ${className || ''}`}>
       <ReactFlowWrapper itemCount={itemCount + additionalCount}>
         <ReactFlow
+          className="nowheel"
           onLoad={(node) => console.log(node)}
           nodes={nodes}
           edges={edges}
@@ -98,6 +99,7 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
           zoomOnScroll={false}
           zoomOnPinch={false}
           nodesDraggable={false}
+          zoomOnDoubleClick={false}
           preventScrolling
         />
         {isLoading && <Loader />}

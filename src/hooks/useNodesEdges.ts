@@ -8,7 +8,7 @@ const edgeType = 'smoothstep';
 const getType = (itemKind: Kind) => {
   switch (itemKind) {
     case Kind.CLUSTER:
-      return NodeType.DEFAULT;
+      return NodeType.INPUT;
     case Kind.GROUP:
       return NodeType.DEFAULT;
     case Kind.ITEM:
