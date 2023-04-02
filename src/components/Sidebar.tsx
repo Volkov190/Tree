@@ -7,7 +7,14 @@ import Button from './Button';
 import { CloseOutline } from '../assets/icons';
 
 const Sidebar: FC = () => {
-  const { selectedItem, onSelectItem, groups, clusters, changeProductItem, changeGroupItem } = useItems();
+  const {
+    selectedItem,
+    onSelectItem,
+    groups,
+    clusters,
+    changeProductItem,
+    onChangeGroupItem: changeGroupItem,
+  } = useItems();
   const [newGroup, setNewGroup] = useState<GroupItem | null | undefined>();
   const [newCluster, setNewCluster] = useState<ClusterItem | null | undefined>();
 

@@ -1,6 +1,33 @@
+import { FC } from 'react';
 import styled, { css } from 'styled-components';
+import Tooltip from 'rc-tooltip';
 
-const Button = styled.button<{ appearance?: 'primary' | 'secondary'; disabled?: boolean; isIconButton?: boolean }>`
+interface ButtonProps {
+  appearance?: 'primary' | 'secondary';
+  disabled?: boolean;
+  isIconButton?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  tooltipText?: string;
+}
+
+const Button: FC<ButtonProps> = ({ tooltipText, children, ...props }) => {
+  if (tooltipText)
+    return (
+      <Tooltip showArrow={false} placement="right" trigger={['hover']} overlay={() => <span>{tooltipText}</span>}>
+        <StyledButton {...props}>{children}</StyledButton>
+      </Tooltip>
+    );
+
+  return <StyledButton {...props}>{children}</StyledButton>;
+};
+
+const StyledButton = styled.button<{
+  appearance?: 'primary' | 'secondary';
+  disabled?: boolean;
+  isIconButton?: boolean;
+}>`
   border: 1px solid gray;
   padding: 8px 16px;
   cursor: pointer;

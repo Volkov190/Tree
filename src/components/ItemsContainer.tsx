@@ -28,8 +28,5 @@ const StyledItemsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  width: 100%;
-  overflow: auto;
-  padding: 15px;
   box-sizing: border-box;
 `;

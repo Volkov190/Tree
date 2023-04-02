@@ -12,6 +12,13 @@ const GlobalStyle = createGlobalStyle`
   #root {
     height: 100%;
   }
+
+  /* Tooltip */
+
+  .rc-tooltip-inner {
+    min-height: 0px !important;
+    font-size: 1rem
+  }
 `;
 
 export default GlobalStyle;

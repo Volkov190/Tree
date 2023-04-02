@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, memo, useMemo, useState } from 'react';
 import useItems from '../hooks/useItems';
 import { Item, Kind } from '../types/item';
 import ItemsContainer from './ItemsContainer';
@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { CloseIconWrapper, StyledCloseOutline } from './Sidebar';
 import { DEFAULT_TRANSITION } from '../const/tree';
 
-export const TOP_DRAWER_HEIGHT = 245;
+export const TOP_DRAWER_HEIGHT = 225;
 
 interface TopDrawerProps {
   isOpen: boolean;
@@ -54,10 +54,12 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
             <StyledCloseOutline onClick={() => setIsOpen(false)} />
           </CloseIconWrapper>
         </StyledHeaderMenu>
-        <div style={{ width: '100%' }}>
-          {currentTab === Kind.CLUSTER && <ItemsContainer kind={Kind.CLUSTER} />}
-          {currentTab === Kind.GROUP && <ItemsContainer kind={Kind.GROUP} />}
-          {currentTab === Kind.ITEM && <ItemsContainer kind={Kind.ITEM} />}
+        <div>
+          <ContentWrapper className="p-3">
+            {currentTab === Kind.CLUSTER && <ItemsContainer kind={Kind.CLUSTER} />}
+            {currentTab === Kind.GROUP && <ItemsContainer kind={Kind.GROUP} />}
+            {currentTab === Kind.ITEM && <ItemsContainer kind={Kind.ITEM} />}
+          </ContentWrapper>
         </div>
         <StyledButton
           onClick={() => setIsOpen(!isOpen)}
@@ -70,8 +72,6 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
     </div>
   );
 };
-
-export default TopDrawer;
 
 const StyledTab = styled.div<{ importantItems: Item[]; kind: Kind; currentTab: Kind }>`
   padding: 10px;
@@ -119,9 +119,6 @@ const StyledButton = styled.button<{ existsImportantItems: boolean }>`
 
 const StyledMenu = styled.div<{ showMenu: boolean }>`
   width: 100%;
-  align-items: center;
-  display: flex;
-  flex-direction: column;
   background: #f5f5f5;
   transition: ${DEFAULT_TRANSITION}s;
   height: ${TOP_DRAWER_HEIGHT}px;
@@ -136,3 +133,10 @@ const StyledHeaderMenu = styled.div`
   width: 100%;
   box-sizing: border-box;
 `;
+
+const ContentWrapper = styled.div`
+  height: ${TOP_DRAWER_HEIGHT - 44 - 32}px;
+  overflow-y: auto;
+`;
+
+export default memo(TopDrawer);
