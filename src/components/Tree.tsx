@@ -5,7 +5,6 @@ import { NODE_HEIGHT, NODE_SCALE, NODE_STEP_HEIGHT, NODE_STEP_WIDTH, NODE_WIDTH 
 import useItems from '../hooks/useItems';
 
 import { useLayout } from '../hooks/useLayout';
-import '../index.css';
 import { isGroup, isProduct, Item, Kind } from '../types/item';
 
 interface TreeProps {
