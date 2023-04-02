@@ -2,13 +2,12 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../app/store';
 
-import { selectItem } from '../slices/selectedItem';
-import { changeItem as changeItemStore } from '../slices/items';
+import { selectItem, changeItem as changeItemStore } from '../slices/items';
 import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem } from '../types/item';
 
 const useItems = () => {
   const { value: items } = useSelector((state: RootState) => state.items);
-  const { value: selectedItem } = useSelector((state: RootState) => state.selectedItem);
+  const { selectedItem } = useSelector((state: RootState) => state.items);
   const dispatch = useDispatch<AppDispatch>();
 
   const [itemsWithoutRelations, itemsWithRelations] = useMemo(() => {
@@ -72,8 +71,6 @@ const useItems = () => {
       return [cluster, ...usedGroups, ...usedProducts];
     });
   }, [itemsWithRelations]);
-
-  console.log(trees);
 
   const onSelectItem = useCallback(
     (item?: Item | null) => {

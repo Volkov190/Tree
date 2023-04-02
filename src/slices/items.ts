@@ -7,12 +7,14 @@ export interface ItemsState {
   value: Item[];
   histories: History[];
   status: 'idle' | 'loading' | 'failed';
+  selectedItem: Item | null;
 }
 
 const initialState: ItemsState = {
   initialValue: [],
   value: [],
   histories: [],
+  selectedItem: null,
   status: 'idle',
 };
 export const fetchItemsThunk = createAsyncThunk('items/fetchItems', async () => {
@@ -33,7 +35,12 @@ export const itemsSlice = createSlice({
         }
         return item;
       });
+      state.selectedItem = afterChangeItem;
       state.histories = [...state.histories, action.payload];
+    },
+
+    selectItem: (state, action: PayloadAction<Item | null | undefined>) => {
+      state.selectedItem = action.payload || null;
     },
 
     undoLastChange: (state) => {
@@ -66,6 +73,6 @@ export const itemsSlice = createSlice({
   },
 });
 
-export const { changeItem, undoLastChange } = itemsSlice.actions;
+export const { changeItem, undoLastChange, selectItem } = itemsSlice.actions;
 
 export default itemsSlice.reducer;
