@@ -19,6 +19,12 @@ const GlobalStyle = createGlobalStyle`
     min-height: 0px !important;
     font-size: 1rem
   }
+
+  /* ReactFlow */
+
+  .react-flow__pane {
+    cursor: default !important;
+  }
 `;
 
 export default GlobalStyle;
