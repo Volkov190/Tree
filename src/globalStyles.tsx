@@ -12,6 +12,25 @@ const GlobalStyle = createGlobalStyle`
   #root {
     height: 100%;
   }
+
+  /* Tooltip */
+
+  .rc-tooltip-inner {
+    min-height: 0px !important;
+    font-size: 1rem
+  }
+
+  /* ReactFlow */
+
+  .react-flow__pane {
+    cursor: default !important;
+  }
+
+  .react-flow__handle {
+    background-color: #727272;
+    height: 3px;
+    width: 3px;
+  }
 `;
 
 export default GlobalStyle;

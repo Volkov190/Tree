@@ -121,8 +121,7 @@ const LoaderWrapper = styled.div`
 
 const ReactFlowWrapper = styled.div<{ itemCount: number }>`
   width: ${NODE_SCALE * (NODE_WIDTH * 3 + NODE_STEP_WIDTH * 2)}px;
-  height: ${({ itemCount }) =>
-    NODE_SCALE * (NODE_HEIGHT * itemCount + NODE_STEP_HEIGHT * (itemCount - 1)) + (itemCount % 1 ? 1 : 0)}px;
+  height: ${({ itemCount }) => NODE_SCALE * (NODE_HEIGHT * itemCount + NODE_STEP_HEIGHT * (itemCount - 1)) + 2}px;
   position: relative;
   .react-flow__panel {
     display: none;

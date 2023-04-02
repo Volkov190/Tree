@@ -14,8 +14,8 @@ const Sidebar: FC = () => {
     products,
     clusters,
     changeProductItem,
-    changeGroupItem,
-    changeGroupItems,
+    onChangeGroupItem,
+    onChangeGroupItems,
   } = useItems();
   const [newGroup, setNewGroup] = useState<GroupItem | null | undefined>();
   const [newGroups, setNewGroups] = useState<GroupItem[] | null | undefined>();
@@ -29,12 +29,12 @@ const Sidebar: FC = () => {
     }
     if (selectedItem?.kind === Kind.GROUP) {
       if (newGroup !== undefined) {
-        changeGroupItem(selectedItem, { clusterUuid: newCluster?.uuid || null });
+        onChangeGroupItem(selectedItem, { clusterUuid: newCluster?.uuid || null });
         setNewCluster(undefined);
       }
       if (!newProducts) return;
       const selectedProducts = products.filter((item) => item.groupUuid === selectedItem.uuid);
-      changeGroupItems([
+      onChangeGroupItems([
         ...newProducts.map((item) => ({
           beforeChangeItem: item,
           afterChangeItem: { ...item, groupUuid: selectedItem.uuid },
@@ -51,7 +51,7 @@ const Sidebar: FC = () => {
     if (selectedItem?.kind === Kind.CLUSTER) {
       if (!newGroups) return;
       const selectedGroups = groups.filter((group) => group.clusterUuid === selectedItem.uuid);
-      changeGroupItems([
+      onChangeGroupItems([
         ...newGroups.map((item) => ({
           beforeChangeItem: item,
           afterChangeItem: { ...item, clusterUuid: selectedItem.uuid },
@@ -71,8 +71,8 @@ const Sidebar: FC = () => {
     newGroup,
     newProducts,
     products,
-    changeGroupItems,
-    changeGroupItem,
+    onChangeGroupItems,
+    onChangeGroupItem,
     newCluster?.uuid,
     newGroups,
     groups,

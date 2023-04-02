@@ -60,6 +60,7 @@ export const useNodesEdges = (items: Item[]) => {
           target: itemId,
           source: itemParentId,
           type: edgeType,
+          animated: !item.important,
         };
       })
       .filter(truthy);

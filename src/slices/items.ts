@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import fetchItems from '../fetchers/fetchItems';
-import { History, HistoryNode, Item } from '../types/item';
+import { GroupItem, History, HistoryNode, isCluster, isGroup, isProduct, Item, Kind, ProductItem } from '../types/item';
 
 export interface ItemsState {
   initialValue: Item[];
@@ -58,6 +58,43 @@ export const itemsSlice = createSlice({
       });
       state.histories = [...state.histories, history];
     },
+    deleteUnimportantItems: (state) => {
+      const unimportantClusters = state.value.filter(isCluster).filter((cluster) => !cluster.important);
+      const unimportantGroups = state.value.filter(isGroup).filter((cluster) => !cluster.important);
+      const unimportantProducts = state.value.filter(isProduct).filter((cluster) => !cluster.important);
+
+      const currentHistory: History = [];
+
+      [...unimportantClusters, ...unimportantGroups, ...unimportantProducts].forEach((item) =>
+        currentHistory.push({ beforeChangeItem: item, afterChangeItem: null }),
+      );
+
+      const unimportantClusterUuids = unimportantClusters.map((item) => item.uuid);
+
+      const newItems = state.value
+        .filter((item) => item.important)
+        .map((item) => {
+          if (item.kind === Kind.GROUP && unimportantClusterUuids.includes(item.clusterUuid || '')) {
+            currentHistory.push({ beforeChangeItem: item, afterChangeItem: { ...item, clusterUuid: null } });
+            return { ...item, clusterUuid: null } as GroupItem;
+          }
+          if (item.kind === Kind.ITEM && item.groupUuid) {
+            const productGroup = state.value.filter(isGroup).find((group) => group.uuid === item.groupUuid);
+            if (
+              productGroup &&
+              (unimportantClusterUuids.includes(productGroup.clusterUuid || '') || !productGroup.important)
+            ) {
+              currentHistory.push({ beforeChangeItem: item, afterChangeItem: { ...item, groupUuid: null } });
+              return { ...item, groupUuid: null } as ProductItem;
+            }
+          }
+
+          return item;
+        });
+
+      state.histories = [...state.histories, currentHistory];
+      state.value = newItems;
+    },
 
     selectItem: (state, action: PayloadAction<Item | null | undefined>) => {
       state.selectedItem = action.payload || null;
@@ -99,6 +136,6 @@ export const itemsSlice = createSlice({
   },
 });
 
-export const { changeItem, changeItems, undoLastChange, selectItem } = itemsSlice.actions;
+export const { changeItem, undoLastChange, selectItem, deleteUnimportantItems, changeItems } = itemsSlice.actions;
 
 export default itemsSlice.reducer;
