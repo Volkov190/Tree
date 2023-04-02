@@ -1,62 +1,133 @@
-import { FC, memo, useCallback, useEffect } from 'react';
-import ReactFlow, { Connection, ConnectionLineType, addEdge, useEdgesState, useNodesState } from 'reactflow';
-import 'reactflow/dist/style.css';
+import { FC, memo, useState, useEffect, useMemo } from 'react';
+import ReactFlow, { useEdgesState, useNodesState, useReactFlow } from 'reactflow';
+import styled from 'styled-components';
+import { NODE_HEIGHT, NODE_SCALE, NODE_STEP_HEIGHT, NODE_STEP_WIDTH, NODE_WIDTH } from '../const/tree';
 
 import { useLayout } from '../hooks/useLayout';
 import '../index.css';
-import { Item } from '../types/item';
 import useItems from '../hooks/useItems';
-import Button from './Button';
-import {useDispatch} from 'react-redux';
-import {AppDispatch} from '../app/store';
-import { undoLastChange } from '../slices/items';
+import { isGroup, isProduct, Item, Kind } from '../types/item';
 
-const Tree: FC = () => {
-  const layout = useLayout();
+interface TreeProps {
+  tree: Item[];
+  className?: string;
+}
+
+const Tree: FC<TreeProps> = ({ tree, className }) => {
+  const layout = useLayout(tree);
   const { onSelectItem } = useItems();
+  const flow = useReactFlow();
 
-  const dispatch = useDispatch<AppDispatch>();
+  const [nodes, setNodes] = useNodesState<Item>([]);
+  const [edges, setEdges] = useEdgesState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const undoChanges = useCallback(()=> {
-    dispatch(undoLastChange());
-  }, [dispatch]);
+  const additionalCount = useMemo(() => {
+    const productsPerGroup = tree.filter(isGroup).map((group) => {
+      return tree.filter(isProduct).filter((product) => product.groupUuid === group.uuid).length;
+    });
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Item>([]);
+    let testNumber = 0;
+    let nextIdxForCheck: number | null = null;
+    productsPerGroup.forEach((curCount, curIdx) => {
+      if (nextIdxForCheck !== null && curIdx < nextIdxForCheck) return;
+      nextIdxForCheck = null;
+
+      if (curCount !== 0) return;
+
+      let prevNonZeroCount = 0;
+      let nextNonZeroCount = 0;
+      let aroundZeroCount = 0;
+      productsPerGroup.forEach((count, idx) => {
+        if (idx === curIdx) return;
+
+        if (idx < curIdx && count !== 0) {
+          prevNonZeroCount = count;
+          aroundZeroCount = 0;
+        } else if (idx > curIdx && !nextNonZeroCount && count !== 0) {
+          nextNonZeroCount = count;
+          nextIdxForCheck = idx;
+        } else if (prevNonZeroCount && !nextNonZeroCount && count === 0) {
+          aroundZeroCount += 1;
+        }
+      });
+
+      const res =
+        aroundZeroCount +
+        1 -
+        ((prevNonZeroCount > 0 ? prevNonZeroCount - 1 : 0) + (nextNonZeroCount > 0 ? nextNonZeroCount - 1 : 0)) / 2;
+      if ((prevNonZeroCount || nextNonZeroCount) && res > 0) {
+        testNumber += res;
+      }
+    });
+
+    return testNumber;
+  }, [tree]);
+
   useEffect(() => {
     setNodes(layout.nodes);
   }, [layout.nodes, setNodes]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
   useEffect(() => {
     setEdges(layout.edges);
   }, [layout.edges, setEdges]);
 
-  const onConnect = useCallback(
-    (params: Connection) =>
-      setEdges((eds) => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  // @NOTE: костыль ;(
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      flow.fitView({ padding: 0 });
+      setIsLoading(false);
+    }, 500);
+  }, [flow, tree]);
+
+  const itemCount = useMemo(() => tree.filter((item) => item.kind === Kind.ITEM).length, [tree]);
 
   // const stiledButtons = styled
 
   return (
-    <>
-      <div className="layoutflow">
-        <Button onClick={()=> undoChanges()}>Undo</Button>
+    <div className={`d-inline-block ${className || ''}`}>
+      <ReactFlowWrapper itemCount={itemCount + additionalCount}>
         <ReactFlow
+          className="nowheel"
+          onLoad={(node) => console.log(node)}
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          connectionLineType={ConnectionLineType.SmoothStep}
-          fitView
-          nodesDraggable={false}
           onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}
+          fitView
+          fitViewOptions={{ padding: 0 }}
+          nodesConnectable={false}
+          panOnDrag={false}
+          zoomOnScroll={false}
+          zoomOnPinch={false}
+          nodesDraggable={false}
+          zoomOnDoubleClick={false}
+          preventScrolling
         />
-      </div>
-    </>
+        {isLoading && <Loader />}
+      </ReactFlowWrapper>
+    </div>
   );
 };
+
+const Loader: FC = () => {
+  return <LoaderWrapper>loading..</LoaderWrapper>;
+};
+
+const LoaderWrapper = styled.div`
+  background: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const ReactFlowWrapper = styled.div<{ itemCount: number }>`
+  width: ${NODE_SCALE * (NODE_WIDTH * 3 + NODE_STEP_WIDTH * 2)}px;
+  height: ${({ itemCount }) =>
+    NODE_SCALE * (NODE_HEIGHT * itemCount + NODE_STEP_HEIGHT * (itemCount - 1)) + (itemCount % 1 ? 1 : 0)}px;
+  position: relative;
+`;
 
 export default memo(Tree);

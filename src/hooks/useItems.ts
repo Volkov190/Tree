@@ -2,13 +2,12 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../app/store';
 
-import { selectItem } from '../slices/selectedItem';
-import { changeItem as changeItemStore } from '../slices/items';
+import { selectItem, changeItem as changeItemStore } from '../slices/items';
 import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem } from '../types/item';
 
 const useItems = () => {
   const { value: items } = useSelector((state: RootState) => state.items);
-  const { value: selectedItem } = useSelector((state: RootState) => state.selectedItem);
+  const { selectedItem } = useSelector((state: RootState) => state.items);
   const dispatch = useDispatch<AppDispatch>();
 
   const [itemsWithoutRelations, itemsWithRelations] = useMemo(() => {
@@ -58,6 +57,37 @@ const useItems = () => {
     return items.filter(isCluster);
   }, [items]);
 
+  const trees = useMemo(() => {
+    const clustersWithRelations = itemsWithRelations.filter((item) => item.kind === Kind.CLUSTER);
+
+    return clustersWithRelations
+      .map((cluster) => {
+        const usedGroups = itemsWithRelations.filter(
+          (item) => item.kind === Kind.GROUP && item.clusterUuid === cluster.uuid,
+        );
+        const usedProducts = itemsWithRelations.filter(
+          (item) => item.kind === Kind.ITEM && usedGroups.map((group) => group.uuid).includes(item.groupUuid || ''),
+        );
+
+        return [cluster, ...usedGroups, ...usedProducts];
+      })
+      .filter((tree) => {
+        let isWithGroup = false;
+        let isWithProduct = false;
+
+        tree.forEach((item) => {
+          if (item.kind === Kind.GROUP) {
+            isWithGroup = true;
+          }
+          if (item.kind === Kind.ITEM) {
+            isWithProduct = true;
+          }
+        });
+
+        return isWithGroup && isWithProduct;
+      });
+  }, [itemsWithRelations]);
+
   const onSelectItem = useCallback(
     (item?: Item | null) => {
       dispatch(selectItem(item));
@@ -90,6 +120,7 @@ const useItems = () => {
     itemsWithoutRelations,
     itemsWithRelations,
     selectedItem,
+    trees,
     onSelectItem,
     changeProductItem,
     changeGroupItem,

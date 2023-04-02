@@ -12,20 +12,24 @@ export enum NodeType {
 
 export type Item = ClusterItem | GroupItem | ProductItem;
 
-export type History = {
+export type HistoryNode = {
   beforeChangeItem: Item;
-  afterChangeItem: Item;
+  afterChangeItem: Item | null;
 };
+
+export type History = HistoryNode[];
 
 export interface ClusterItem {
   kind: Kind.CLUSTER;
   uuid: string;
+  important: boolean;
   name: string;
 }
 
 export interface GroupItem {
   kind: Kind.GROUP;
   uuid: string;
+  important: boolean;
   clusterUuid: string | null;
   name: string;
 }

@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { Edge, Node } from 'reactflow';
-import { Item, ItemId, Kind, NodeType, isCluster, isGroup, isProduct, truthy } from '../types/item';
-import useItems from './useItems';
+import { NODE_HEIGHT, NODE_WIDTH } from '../const/tree';
+import { Item, ItemId, Kind, NodeType, isGroup, isProduct, truthy } from '../types/item';
+
 const edgeType = 'smoothstep';
-const rooltId = 'root';
 
 const getType = (itemKind: Kind) => {
   switch (itemKind) {
     case Kind.CLUSTER:
-      return NodeType.DEFAULT;
+      return NodeType.INPUT;
     case Kind.GROUP:
       return NodeType.DEFAULT;
     case Kind.ITEM:
@@ -21,25 +21,20 @@ const getType = (itemKind: Kind) => {
   }
 };
 
-export const useNodesEdges = () => {
-  const { items } = useItems();
-
-  const nodes = useMemo<Node<Item>[]>(() => {
-    return [
-      {
-        id: rooltId,
-        type: NodeType.INPUT,
-        data: { label: rooltId } as any,
-        position: { x: 0, y: 0 },
-      },
-      ...items.map((item) => ({
-        id: item.uuid,
-        type: getType(item.kind),
-        data: { ...item, label: item.name },
-        position: { x: 0, y: 0 },
-      })),
-    ];
-  }, [items]);
+export const useNodesEdges = (items: Item[]) => {
+  const nodes = useMemo(
+    () =>
+      items.map(
+        (item): Node<Item & { label: string }> => ({
+          id: item.uuid,
+          type: getType(item.kind),
+          data: { ...item, label: item.name },
+          position: { x: 0, y: 0 },
+          style: { width: `${NODE_WIDTH}px`, height: `${NODE_HEIGHT}px` },
+        }),
+      ),
+    [items],
+  );
 
   const edges = useMemo<Edge[]>(() => {
     const parentsMap = new Map<ItemId, ItemId>();
@@ -55,29 +50,19 @@ export const useNodesEdges = () => {
       }
     });
 
-    const clusters = items.filter(isCluster);
-
-    return [
-      ...clusters.map((cluster) => ({
-        id: `e${cluster.uuid}${rooltId}`,
-        target: cluster.uuid,
-        source: rooltId,
-        type: edgeType,
-        animated: true,
-      })),
-      ...items.map((item) => {
+    return items
+      .map((item): Edge => {
         const itemId = item.uuid;
         const itemParentId = parentsMap.get(itemId);
-        if (!itemParentId) return;
+        if (!itemParentId) return null as any;
         return {
           id: `e${itemId}${itemParentId}`,
           target: itemId,
           source: itemParentId,
           type: edgeType,
-          animated: true,
         };
-      }),
-    ].filter(truthy);
+      })
+      .filter(truthy);
   }, [items]);
   return { nodes, edges };
 };
