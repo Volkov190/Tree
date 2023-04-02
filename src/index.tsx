@@ -6,6 +6,7 @@ import { store } from './app/store';
 import 'reactflow/dist/style.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import 'bootstrap/dist/css/bootstrap-utilities.rtl.min.css';
+import 'rc-tooltip/assets/bootstrap_white.css';
 import GlobalStyle from './globalStyles';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

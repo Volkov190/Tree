@@ -6,8 +6,7 @@ import { selectItem, changeItem, deleteUnimportantItems, undoLastChange } from '
 import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem } from '../types/item';
 
 const useItems = () => {
-  const { value: items } = useSelector((state: RootState) => state.items);
-  const { selectedItem } = useSelector((state: RootState) => state.items);
+  const { value: items, selectedItem, histories } = useSelector((state: RootState) => state.items);
   const dispatch = useDispatch<AppDispatch>();
 
   const [itemsWithoutRelations, itemsWithRelations] = useMemo(() => {
@@ -88,6 +87,14 @@ const useItems = () => {
       });
   }, [itemsWithRelations]);
 
+  const hasHistory = useMemo(() => {
+    return !!histories.length;
+  }, [histories]);
+
+  const hasUnimportantItems = useMemo(() => {
+    return items.some((item) => !item.important);
+  }, [items]);
+
   const onSelectItem = useCallback(
     (item?: Item | null) => {
       dispatch(selectItem(item));
@@ -124,6 +131,8 @@ const useItems = () => {
     itemsWithoutRelations,
     itemsWithRelations,
     selectedItem,
+    hasHistory,
+    hasUnimportantItems,
     trees,
     onSelectItem,
     changeProductItem,

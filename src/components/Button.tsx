@@ -10,6 +10,7 @@ interface ButtonProps {
   className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   tooltipText?: string;
+  color?: string;
 }
 
 const Button: FC<ButtonProps> = ({ tooltipText, children, ...props }) => {
@@ -33,6 +34,8 @@ const StyledButton = styled.button<{
   cursor: pointer;
   border-radius: 4px;
   font-size: 0.8rem;
+
+  ${({ disabled }) => disabled && 'cursor: default;'}
 
   ${({ appearance, isIconButton }) => {
     if (isIconButton) return ButtonIcon;
@@ -58,13 +61,11 @@ const ButtonSecondary = css<{ disabled?: boolean }>`
   }
 `;
 
-const ButtonIcon = css<{ disabled?: boolean }>`
-  background: ${({ disabled }) => (disabled ? 'gray' : '#ffffff')};
-  border-radius: 4px;
-  cursor: pointer;
+const ButtonIcon = css<{ disabled?: boolean; color?: string }>`
+  background: ${({ disabled }) => (disabled ? '#eeeeee' : '#ffffff')};
 
   &:hover {
-    background-color: #e9e9e9;
+    background-color: ${({ disabled }) => (disabled ? '#eeeeee' : '#e9e9e9')};
   }
 
   border: none;

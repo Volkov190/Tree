@@ -1,10 +1,10 @@
-import { FC, memo, useCallback } from 'react';
+import { FC, memo } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import useItems from '../hooks/useItems';
 import Tree from './Tree';
 
 const Trees: FC = () => {
-  const { trees, onDeleteUnimportantItems } = useItems();
+  const { trees } = useItems();
 
   return (
     <>

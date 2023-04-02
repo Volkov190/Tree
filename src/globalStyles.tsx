@@ -25,6 +25,12 @@ const GlobalStyle = createGlobalStyle`
   .react-flow__pane {
     cursor: default !important;
   }
+
+  .react-flow__handle {
+    background-color: #727272;
+    height: 3px;
+    width: 3px;
+  }
 `;
 
 export default GlobalStyle;

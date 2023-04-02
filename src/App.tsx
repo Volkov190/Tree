@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from './app/store';
-import { fetchItemsThunk, undoLastChange } from './slices/items';
+import { fetchItemsThunk } from './slices/items';
 import Trees from './components/Trees';
 import useItems from './hooks/useItems';
 import Sidebar from './components/Sidebar';
@@ -10,11 +10,11 @@ import styled from 'styled-components';
 import { DEFAULT_TRANSITION } from './const/tree';
 
 import Button from './components/Button';
-import { BackIcon, DeleteOutline } from './assets/icons';
+import { BackIcon, DeleteOutline, SaveOutline } from './assets/icons';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { selectedItem, onDeleteUnimportantItems, onUndoLastChange } = useItems();
+  const { selectedItem, onDeleteUnimportantItems, onUndoLastChange, hasHistory, hasUnimportantItems } = useItems();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -28,7 +28,13 @@ function App() {
 
         <TreesWrapper className="flex-grow-1">
           <ControlsWrapper>
-            <Button className="m-2" tooltipText="Отменить последнее изменение" onClick={onUndoLastChange} isIconButton>
+            <Button
+              className="m-2"
+              tooltipText="Отменить последнее изменение"
+              onClick={onUndoLastChange}
+              isIconButton
+              disabled={!hasHistory}
+            >
               <BackIcon />
             </Button>
             <Button
@@ -36,8 +42,12 @@ function App() {
               tooltipText="Удалить все незначащие узлы"
               onClick={onDeleteUnimportantItems}
               isIconButton
+              disabled={!hasUnimportantItems}
             >
               <DeleteOutline />
+            </Button>
+            <Button className="m-2" tooltipText="Сохранить" onClick={() => null} isIconButton disabled={!hasHistory}>
+              <SaveOutline />
             </Button>
           </ControlsWrapper>
           <ScrollWrapper className="d-flex flex-column align-items-center py-3">
