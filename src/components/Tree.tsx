@@ -4,7 +4,7 @@ import 'reactflow/dist/style.css';
 
 import { useLayout } from '../hooks/useLayout';
 import '../index.css';
-import { Item } from '../types/item';
+import type { Item } from '../types/item';
 import useItems from '../hooks/useItems';
 import Button from './Button';
 import { useDispatch } from 'react-redux';
@@ -39,26 +39,24 @@ const Tree: FC = () => {
   );
 
   return (
-    <>
-      <div className="layoutflow ">
-        <div className="m-2">
-          <Button onClick={() => undoChanges()} isIconButton>
-            <BackIcon />
-          </Button>
-        </div>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          connectionLineType={ConnectionLineType.SmoothStep}
-          fitView
-          nodesDraggable={false}
-          onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}
-        />
+    <div className="layoutflow flex-grow-1">
+      <div className="m-2">
+        <Button onClick={() => undoChanges()} isIconButton>
+          <BackIcon />
+        </Button>
       </div>
-    </>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        connectionLineType={ConnectionLineType.SmoothStep}
+        fitView
+        nodesDraggable={false}
+        onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}
+      />
+    </div>
   );
 };
 

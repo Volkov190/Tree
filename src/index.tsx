@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import App from './App';
 import { store } from './app/store';
 import './index.css';
+import 'reactflow/dist/style.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import 'bootstrap/dist/css/bootstrap-utilities.rtl.min.css';
 
