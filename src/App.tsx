@@ -22,9 +22,9 @@ function App() {
       <div className="flex-grow-1 d-flex flex-column h-100">
         <StyledTopDrawer isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
         <TreesWrapper className="flex-grow-1 mt-5">
-          <div className="d-flex flex-column align-items-center">
+          <ScrollWrapper className="d-flex flex-column align-items-center">
             <Trees />
-          </div>
+          </ScrollWrapper>
         </TreesWrapper>
       </div>
       {selectedItem && <Sidebar />}
@@ -32,11 +32,23 @@ function App() {
   );
 }
 
-const TreesWrapper = styled.div``;
+const TreesWrapper = styled.div`
+  position: relative;
+`;
 
 const StyledTopDrawer = styled(TopDrawer)<{ isOpen: boolean }>`
   height: ${({ isOpen }) => (isOpen ? TOP_DRAWER_HEIGHT : 0)}px;
   transition: height 0.2s;
+`;
+
+const ScrollWrapper = styled.div`
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  overflow-y: auto;
 `;
 
 export default App;

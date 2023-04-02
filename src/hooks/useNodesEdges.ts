@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Edge, Node } from 'reactflow';
+import { NODE_HEIGHT, NODE_WIDTH } from '../const/tree';
 import { Item, ItemId, Kind, NodeType, isGroup, isProduct, truthy } from '../types/item';
 
 const edgeType = 'smoothstep';
@@ -29,6 +30,7 @@ export const useNodesEdges = (items: Item[]) => {
           type: getType(item.kind),
           data: { ...item, label: item.name },
           position: { x: 0, y: 0 },
+          style: { width: `${NODE_WIDTH}px`, height: `${NODE_HEIGHT}px` },
         }),
       ),
     [items],

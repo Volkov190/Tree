@@ -60,16 +60,32 @@ const useItems = () => {
   const trees = useMemo(() => {
     const clustersWithRelations = itemsWithRelations.filter((item) => item.kind === Kind.CLUSTER);
 
-    return clustersWithRelations.map((cluster) => {
-      const usedGroups = itemsWithRelations.filter(
-        (item) => item.kind === Kind.GROUP && item.clusterUuid === cluster.uuid,
-      );
-      const usedProducts = itemsWithRelations.filter(
-        (item) => item.kind === Kind.ITEM && usedGroups.map((group) => group.uuid).includes(item.groupUuid || ''),
-      );
+    return clustersWithRelations
+      .map((cluster) => {
+        const usedGroups = itemsWithRelations.filter(
+          (item) => item.kind === Kind.GROUP && item.clusterUuid === cluster.uuid,
+        );
+        const usedProducts = itemsWithRelations.filter(
+          (item) => item.kind === Kind.ITEM && usedGroups.map((group) => group.uuid).includes(item.groupUuid || ''),
+        );
 
-      return [cluster, ...usedGroups, ...usedProducts];
-    });
+        return [cluster, ...usedGroups, ...usedProducts];
+      })
+      .filter((tree) => {
+        let isWithGroup = false;
+        let isWithProduct = false;
+
+        tree.forEach((item) => {
+          if (item.kind === Kind.GROUP) {
+            isWithGroup = true;
+          }
+          if (item.kind === Kind.ITEM) {
+            isWithProduct = true;
+          }
+        });
+
+        return isWithGroup && isWithProduct;
+      });
   }, [itemsWithRelations]);
 
   const onSelectItem = useCallback(
