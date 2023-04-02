@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { NODE_HEIGHT, NODE_SCALE, NODE_STEP_HEIGHT, NODE_STEP_WIDTH, NODE_WIDTH } from '../const/tree';
 
 import { useLayout } from '../hooks/useLayout';
-import { isGroup, isProduct, Item, Kind } from '../types/item';
+import { isCluster, isGroup, isProduct, Item } from '../types/item';
 import useItems from '../hooks/useItems';
 
 interface TreeProps {
@@ -13,7 +13,10 @@ interface TreeProps {
 }
 
 const Tree: FC<TreeProps> = ({ tree, className }) => {
-  const layout = useLayout(tree);
+  const isWithoutProducts = useMemo(() => !tree.some(isProduct), [tree]);
+  const isWithoutCluster = useMemo(() => !tree.some(isCluster), [tree]);
+
+  const layout = useLayout(tree, { isWithoutProducts, isWithoutCluster });
   const { onSelectItem } = useItems();
   const flow = useReactFlow();
 
@@ -80,7 +83,13 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
     }, 500);
   }, [flow, tree]);
 
-  const itemCount = useMemo(() => tree.filter((item) => item.kind === Kind.ITEM).length, [tree]);
+  const itemCount = useMemo(() => {
+    if (isWithoutProducts) {
+      return tree.filter(isGroup).length;
+    } else {
+      return tree.filter(isProduct).length;
+    }
+  }, [isWithoutProducts, tree]);
 
   return (
     <div className={`d-inline-block ${className || ''}`}>

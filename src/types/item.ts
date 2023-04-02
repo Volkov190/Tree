@@ -63,6 +63,10 @@ export const isGroupedProduct = (item: Item): item is GroupedProductItem => {
   return isProduct(item) && !!item.groupUuid;
 };
 
+export const isImportantItem = (item: Item) => {
+  return !!item.important;
+};
+
 export type Items = Item[];
 
 type Falsy = false | 0 | '' | null | undefined;

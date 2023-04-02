@@ -35,8 +35,8 @@ const getLayoutedElements = (nodes: Node<Item>[], edges: Edge[]) => {
   return { nodes, edges };
 };
 
-export const useLayout = (items: Item[]) => {
-  const nodesEdges = useNodesEdges(items);
+export const useLayout = (items: Item[], options?: { isWithoutProducts?: boolean; isWithoutCluster?: boolean }) => {
+  const nodesEdges = useNodesEdges(items, options);
 
   const result = useMemo(() => {
     const targetIds = new Set<ItemId>();

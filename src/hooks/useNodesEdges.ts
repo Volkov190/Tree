@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { Edge, Node } from 'reactflow';
 import { NODE_HEIGHT, NODE_WIDTH } from '../const/tree';
 import { Item, ItemId, Kind, NodeType, isGroup, isProduct, truthy } from '../types/item';
+import useItems from './useItems';
 
 const edgeType = 'smoothstep';
+const EMPTY_NODE_ID = 'empty';
 
 const getType = (itemKind: Kind) => {
   switch (itemKind) {
@@ -21,38 +23,56 @@ const getType = (itemKind: Kind) => {
   }
 };
 
-export const useNodesEdges = (items: Item[]) => {
-  const nodes = useMemo(
-    () =>
-      items.map(
-        (item): Node<Item & { label: string }> => ({
-          id: item.uuid,
-          type: getType(item.kind),
-          data: { ...item, label: item.name },
-          position: { x: 0, y: 0 },
-          style: { width: `${NODE_WIDTH}px`, height: `${NODE_HEIGHT}px` },
-        }),
-      ),
-    [items],
-  );
+function getId(item: Item) {
+  return `${item.kind}_${item.uuid}`;
+}
+
+export const useNodesEdges = (items: Item[], options?: { isWithoutProducts?: boolean; isWithoutCluster?: boolean }) => {
+  const { isWithoutProducts, isWithoutCluster } = options || {};
+  const { products, groups, clusters } = useItems();
+
+  const nodes = useMemo(() => {
+    const resNodes = items.map(
+      (item): Node<Item & { label: string }> => ({
+        id: getId(item),
+        type: getType(item.kind),
+        data: { ...item, label: item.name },
+        position: { x: 0, y: 0 },
+        style: { width: `${NODE_WIDTH}px`, height: `${NODE_HEIGHT}px` },
+      }),
+    );
+
+    if (isWithoutProducts || isWithoutCluster) {
+      resNodes.push({
+        id: EMPTY_NODE_ID,
+        data: { label: '' } as any,
+        position: { x: 0, y: 0 },
+        style: { visibility: 'hidden' },
+      });
+    }
+
+    return resNodes;
+  }, [isWithoutCluster, isWithoutProducts, items]);
 
   const edges = useMemo<Edge[]>(() => {
     const parentsMap = new Map<ItemId, ItemId>();
 
     items.forEach((item) => {
       if (isProduct(item) && item.groupUuid) {
-        parentsMap.set(item.uuid, item.groupUuid);
+        parentsMap.set(getId(item), getId(groups.find((group) => group.uuid === item.groupUuid)!));
         return;
       }
       if (isGroup(item) && item.clusterUuid) {
-        parentsMap.set(item.uuid, item.clusterUuid);
+        parentsMap.set(getId(item), getId(clusters.find((cluster) => cluster.uuid === item.clusterUuid)!));
         return;
       }
     });
 
-    return items
+    const someGroupId = getId(items.find(isGroup)!);
+
+    let resEdges = items
       .map((item): Edge => {
-        const itemId = item.uuid;
+        const itemId = getId(item);
         const itemParentId = parentsMap.get(itemId);
         if (!itemParentId) return null as any;
         return {
@@ -64,6 +84,28 @@ export const useNodesEdges = (items: Item[]) => {
         };
       })
       .filter(truthy);
-  }, [items]);
+
+    if (isWithoutProducts) {
+      resEdges.push({
+        id: `${EMPTY_NODE_ID}${someGroupId}`,
+        target: EMPTY_NODE_ID,
+        source: someGroupId,
+        style: { visibility: 'hidden' },
+      });
+    }
+
+    if (isWithoutCluster) {
+      const curGroupId = getId(items.find(isGroup)!);
+
+      resEdges.push({
+        id: `${curGroupId}${EMPTY_NODE_ID}`,
+        target: curGroupId,
+        source: EMPTY_NODE_ID,
+        style: { visibility: 'hidden' },
+      });
+    }
+
+    return resEdges;
+  }, [clusters, groups, isWithoutCluster, isWithoutProducts, items]);
   return { nodes, edges };
 };

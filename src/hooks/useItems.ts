@@ -9,45 +9,6 @@ const useItems = () => {
   const { value: items, selectedItem, histories } = useSelector((state: RootState) => state.items);
   const dispatch = useDispatch<AppDispatch>();
 
-  const [itemsWithoutRelations, itemsWithRelations] = useMemo(() => {
-    const itemUuidsWithoutRelation: string[] = [];
-    const itemUuidsWithRelation: string[] = [];
-
-    items.forEach((item) => {
-      if (item.kind === Kind.ITEM) {
-        if (item.groupUuid) {
-          itemUuidsWithRelation.push(item.uuid);
-          if (!itemUuidsWithRelation.includes(item.groupUuid)) {
-            itemUuidsWithRelation.push(item.groupUuid);
-          }
-        } else {
-          itemUuidsWithoutRelation.push(item.uuid);
-        }
-      }
-      if (item.kind === Kind.GROUP) {
-        if (item.clusterUuid) {
-          itemUuidsWithRelation.push(item.uuid);
-          if (!itemUuidsWithRelation.includes(item.clusterUuid)) {
-            itemUuidsWithRelation.push(item.clusterUuid);
-          }
-        } else {
-          itemUuidsWithoutRelation.push(item.uuid);
-        }
-      }
-    });
-
-    items.forEach((item) => {
-      if (item.kind === Kind.CLUSTER && !itemUuidsWithRelation.includes(item.uuid)) {
-        itemUuidsWithoutRelation.push(item.uuid);
-      }
-    });
-
-    return [
-      items.filter((item) => itemUuidsWithoutRelation.includes(item.uuid)),
-      items.filter((item) => itemUuidsWithRelation.includes(item.uuid)),
-    ];
-  }, [items]);
-
   const products = useMemo(() => {
     return items.filter(isProduct);
   }, [items]);
@@ -60,36 +21,119 @@ const useItems = () => {
     return items.filter(isCluster);
   }, [items]);
 
+  const [itemsWithoutRelations, itemsWithRelations] = useMemo(() => {
+    const itemsWithoutRelation: { uuid: string; kind: Kind }[] = [];
+    const itemsWithRelation: { uuid: string; kind: Kind }[] = [];
+
+    items.forEach((item) => {
+      if (item.kind === Kind.ITEM) {
+        if (item.groupUuid) {
+          itemsWithRelation.push(item);
+          if (!itemsWithRelation.find((_item) => _item.uuid === item.uuid && _item.kind === Kind.GROUP)) {
+            itemsWithRelation.push({ uuid: item.groupUuid, kind: Kind.GROUP });
+          }
+        } else {
+          itemsWithoutRelation.push(item);
+        }
+      }
+      if (item.kind === Kind.GROUP) {
+        let hasCluster = false;
+        let hasProducts = false;
+        if (item.clusterUuid) {
+          itemsWithRelation.push({ uuid: item.clusterUuid, kind: Kind.CLUSTER });
+          hasCluster = true;
+        }
+        if (products.find((product) => product.groupUuid === item.uuid)) {
+          hasProducts = true;
+        }
+
+        if (hasCluster || hasProducts) {
+          itemsWithRelation.push(item);
+        } else {
+          itemsWithoutRelation.push(item);
+        }
+      }
+    });
+
+    items.filter(isCluster).forEach((cluster) => {
+      if (!itemsWithRelation.find((item) => item.uuid === cluster.uuid && item.kind === Kind.CLUSTER)) {
+        itemsWithoutRelation.push(cluster);
+      }
+    });
+
+    return [
+      items.filter((item) =>
+        itemsWithoutRelation.find((_item) => _item.uuid === item.uuid && _item.kind === item.kind),
+      ),
+      items.filter((item) => itemsWithRelation.find((_item) => _item.uuid === item.uuid && _item.kind === item.kind)),
+    ];
+  }, [items, products]);
+
   const trees = useMemo(() => {
     const clustersWithRelations = itemsWithRelations.filter((item) => item.kind === Kind.CLUSTER);
 
-    return clustersWithRelations
-      .map((cluster) => {
-        const usedGroups = itemsWithRelations.filter(
-          (item) => item.kind === Kind.GROUP && item.clusterUuid === cluster.uuid,
-        );
-        const usedProducts = itemsWithRelations.filter(
-          (item) => item.kind === Kind.ITEM && usedGroups.map((group) => group.uuid).includes(item.groupUuid || ''),
-        );
+    return clustersWithRelations.map((cluster) => {
+      const usedGroups = itemsWithRelations.filter(
+        (item) => item.kind === Kind.GROUP && item.clusterUuid === cluster.uuid,
+      );
+      const usedProducts = itemsWithRelations.filter(
+        (item) => item.kind === Kind.ITEM && usedGroups.map((group) => group.uuid).includes(item.groupUuid || ''),
+      );
 
-        return [cluster, ...usedGroups, ...usedProducts];
-      })
-      .filter((tree) => {
-        let isWithGroup = false;
-        let isWithProduct = false;
+      return [cluster, ...usedGroups, ...usedProducts];
+    });
+  }, [itemsWithRelations]);
+
+  const fullTrees = useMemo(
+    () =>
+      trees.filter((tree) => {
+        let hasGroups = false;
+        let hasProducts = false;
 
         tree.forEach((item) => {
           if (item.kind === Kind.GROUP) {
-            isWithGroup = true;
+            hasGroups = true;
           }
           if (item.kind === Kind.ITEM) {
-            isWithProduct = true;
+            hasProducts = true;
           }
         });
 
-        return isWithGroup && isWithProduct;
+        return hasGroups && hasProducts;
+      }),
+    [trees],
+  );
+
+  const treesWithoutProducts = useMemo(
+    () =>
+      trees.filter((tree) => {
+        let hasGroups = false;
+        let hasProducts = false;
+
+        tree.forEach((item) => {
+          if (item.kind === Kind.GROUP) {
+            hasGroups = true;
+          }
+          if (item.kind === Kind.ITEM) {
+            hasProducts = true;
+          }
+        });
+
+        return hasGroups && !hasProducts;
+      }),
+    [trees],
+  );
+
+  const treesWithoutClusters = useMemo(() => {
+    const groups = items
+      .filter(isGroup)
+      .filter((group) => group.clusterUuid === null)
+      .filter((group) => {
+        return products.some((product) => product.groupUuid === group.uuid);
       });
-  }, [itemsWithRelations]);
+
+    return groups.map((group) => [group, ...products.filter((product) => product.groupUuid === group.uuid)]);
+  }, [items, products]);
 
   const hasHistory = useMemo(() => {
     return !!histories.length;
@@ -124,7 +168,7 @@ const useItems = () => {
     [dispatch],
   );
 
-  const onChangeGroupItems = useCallback(
+  const onChangeItems = useCallback(
     (historyItems: History) => {
       dispatch(changeItems(historyItems));
     },
@@ -144,13 +188,15 @@ const useItems = () => {
     selectedItem,
     hasHistory,
     hasUnimportantItems,
-    trees,
+    fullTrees,
+    treesWithoutProducts,
+    treesWithoutClusters,
     onSelectItem,
     changeProductItem,
     onChangeGroupItem,
     onDeleteUnimportantItems,
     onUndoLastChange,
-    onChangeGroupItems,
+    onChangeItems,
   };
 };
 

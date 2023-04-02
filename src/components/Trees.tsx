@@ -4,11 +4,11 @@ import useItems from '../hooks/useItems';
 import Tree from './Tree';
 
 const Trees: FC = () => {
-  const { trees } = useItems();
+  const { fullTrees, treesWithoutProducts, treesWithoutClusters } = useItems();
 
   return (
     <>
-      {trees.map((tree, idx) => (
+      {[...fullTrees, ...treesWithoutProducts, ...treesWithoutClusters].map((tree, idx) => (
         <ReactFlowProvider key={idx}>
           <Tree tree={tree} className="mb-4" />
         </ReactFlowProvider>

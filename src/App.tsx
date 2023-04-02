@@ -11,10 +11,18 @@ import { DEFAULT_TRANSITION } from './const/tree';
 
 import Button from './components/Button';
 import { BackIcon, DeleteOutline, SaveOutline } from './assets/icons';
+import { isImportantItem } from './types/item';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { selectedItem, onDeleteUnimportantItems, onUndoLastChange, hasHistory, hasUnimportantItems } = useItems();
+  const {
+    selectedItem,
+    onDeleteUnimportantItems,
+    onUndoLastChange,
+    hasHistory,
+    hasUnimportantItems,
+    itemsWithoutRelations,
+  } = useItems();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -46,7 +54,13 @@ function App() {
             >
               <DeleteOutline />
             </Button>
-            <Button className="m-2" tooltipText="Сохранить" onClick={() => null} isIconButton disabled={!hasHistory}>
+            <Button
+              className="m-2"
+              tooltipText="Сохранить"
+              onClick={() => null}
+              isIconButton
+              disabled={!hasHistory || !!itemsWithoutRelations.filter(isImportantItem).length}
+            >
               <SaveOutline />
             </Button>
           </ControlsWrapper>

@@ -1,4 +1,4 @@
-import { FC, memo, useState, useCallback } from 'react';
+import { FC, memo, useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import useItems from '../hooks/useItems';
 import { ClusterItem, GroupItem, Kind, ProductItem } from '../types/item';
@@ -15,23 +15,29 @@ const Sidebar: FC = () => {
     clusters,
     changeProductItem,
     onChangeGroupItem,
-    onChangeGroupItems,
+    onChangeItems: onChangeGroupItems,
   } = useItems();
   const [newGroup, setNewGroup] = useState<GroupItem | null | undefined>();
-  const [newGroups, setNewGroups] = useState<GroupItem[] | null | undefined>();
-  const [newProducts, setNewProducts] = useState<ProductItem[] | null | undefined>();
   const [newCluster, setNewCluster] = useState<ClusterItem | null | undefined>();
+  const [newProducts, setNewProducts] = useState<ProductItem[] | null | undefined>();
+  const [newGroups, setNewGroups] = useState<GroupItem[] | null | undefined>();
+
+  useEffect(() => {
+    setNewCluster(undefined);
+    setNewGroup(undefined);
+    setNewProducts(undefined);
+    setNewGroups(undefined);
+  }, [selectedItem]);
 
   const onSubmit = useCallback(() => {
     if (selectedItem?.kind === Kind.ITEM) {
       changeProductItem(selectedItem, { groupUuid: newGroup?.uuid || null });
-      setNewGroup(undefined);
     }
     if (selectedItem?.kind === Kind.GROUP) {
-      if (newGroup !== undefined) {
+      if (newCluster !== undefined) {
         onChangeGroupItem(selectedItem, { clusterUuid: newCluster?.uuid || null });
-        setNewCluster(undefined);
       }
+
       if (!newProducts) return;
       const selectedProducts = products.filter((item) => item.groupUuid === selectedItem.uuid);
       onChangeGroupItems([
@@ -43,10 +49,10 @@ const Sidebar: FC = () => {
           .filter((group) => !newProducts.map((newGroup) => newGroup.uuid).includes(group.uuid))
           .map((item) => ({
             beforeChangeItem: item,
-            afterChangeItem: null,
+            afterChangeItem: { ...item, groupUuid: null },
           })),
       ]);
-      setNewGroups(undefined);
+      setNewProducts(undefined);
     }
     if (selectedItem?.kind === Kind.CLUSTER) {
       if (!newGroups) return;
@@ -68,12 +74,12 @@ const Sidebar: FC = () => {
   }, [
     selectedItem,
     changeProductItem,
-    newGroup,
+    newGroup?.uuid,
+    newCluster,
     newProducts,
     products,
     onChangeGroupItems,
     onChangeGroupItem,
-    newCluster?.uuid,
     newGroups,
     groups,
   ]);
@@ -94,7 +100,7 @@ const Sidebar: FC = () => {
             <Select
               isClearable
               placeholder="Ничего не выбрано"
-              options={groups}
+              options={groups.filter((group) => group.clusterUuid)}
               value={selectedGroup}
               getOptionLabel={(item) => item.name}
               getOptionValue={(item) => item.uuid}
@@ -195,9 +201,7 @@ const Sidebar: FC = () => {
         <div className="d-flex justify-content-end">
           <Button
             onClick={onSubmit}
-            disabled={
-              newGroup === undefined && newCluster === undefined && newGroups === undefined && newProducts === undefined
-            }
+            disabled={[newGroup, newCluster, newGroups, newProducts].every((val) => val === undefined)}
             className="me-2"
           >
             Сохранить

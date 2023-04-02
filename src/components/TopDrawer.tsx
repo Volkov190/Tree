@@ -1,6 +1,6 @@
 import { FC, memo, useMemo, useState } from 'react';
 import useItems from '../hooks/useItems';
-import { Item, Kind } from '../types/item';
+import { isCluster, isGroup, isImportantItem, isProduct, Kind } from '../types/item';
 import ItemsContainer from './ItemsContainer';
 import styled from 'styled-components';
 import { CloseIconWrapper, StyledCloseOutline } from './Sidebar';
@@ -18,7 +18,7 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
   const [currentTab, setCurrentTab] = useState(Kind.ITEM);
   const { itemsWithoutRelations } = useItems();
 
-  const importantItems = useMemo(() => itemsWithoutRelations.filter((item) => item.important), [itemsWithoutRelations]);
+  const importantItems = useMemo(() => itemsWithoutRelations.filter(isImportantItem), [itemsWithoutRelations]);
 
   return (
     <div className={className}>
@@ -26,26 +26,23 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
         <StyledHeaderMenu>
           <StyledTabs>
             <StyledTab
-              importantItems={importantItems}
-              kind={Kind.CLUSTER}
               onClick={() => setCurrentTab(Kind.CLUSTER)}
-              currentTab={currentTab}
+              hasError={!!importantItems.filter(isCluster).length}
+              isSelected={currentTab === Kind.CLUSTER}
             >
               Кластеры
             </StyledTab>
             <StyledTab
-              importantItems={importantItems}
-              kind={Kind.GROUP}
               onClick={() => setCurrentTab(Kind.GROUP)}
-              currentTab={currentTab}
+              hasError={!!importantItems.filter(isGroup).length}
+              isSelected={currentTab === Kind.GROUP}
             >
               Группы
             </StyledTab>
             <StyledTab
-              importantItems={importantItems}
-              kind={Kind.ITEM}
               onClick={() => setCurrentTab(Kind.ITEM)}
-              currentTab={currentTab}
+              hasError={!!importantItems.filter(isProduct).length}
+              isSelected={currentTab === Kind.ITEM}
             >
               Продукты
             </StyledTab>
@@ -73,18 +70,17 @@ const TopDrawer: FC<TopDrawerProps> = ({ isOpen, setIsOpen, className }) => {
   );
 };
 
-const StyledTab = styled.div<{ importantItems: Item[]; kind: Kind; currentTab: Kind }>`
+const StyledTab = styled.div<{ hasError?: boolean; isSelected?: boolean }>`
   padding: 10px;
   cursor: pointer;
   user-select: none;
-  border-bottom: ${({ currentTab, kind, importantItems }) =>
-    currentTab === kind
-      ? `2px solid ${importantItems.filter((item) => item.kind === kind)[0]?.kind === kind ? 'red' : 'black'}`
-      : undefined};
-  &.Mui-selected,
+
+  border-bottom-style: solid;
+  border-bottom-color: ${({ hasError }) => (hasError ? 'red' : 'black')};
+  border-bottom-width: ${({ isSelected }) => (isSelected ? '2px' : '0')};
+
   & {
-    color: ${({ importantItems, kind }) =>
-      importantItems.filter((item) => item.kind === kind)[0]?.kind === kind ? 'red' : undefined};
+    color: ${({ hasError }) => (hasError ? 'red' : undefined)};
   }
 `;
 
@@ -93,19 +89,24 @@ const StyledTabs = styled.div`
 `;
 
 const StyledButton = styled.button<{ existsImportantItems: boolean }>`
+  color: white;
+
   position: absolute;
   bottom: 0;
   left: 50%;
   padding: 7px;
-  transform: translateX(-50%) translateY(30px);
-  z-index: 10;
+
   border-radius: 0 0 10px 10px;
   background-color: ${({ existsImportantItems }) => (existsImportantItems ? 'red' : 'gray')};
-  color: white;
-  transition: ${DEFAULT_TRANSITION}s;
+
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-top: none;
+
   cursor: pointer;
+
+  transform: translateX(-50%) translateY(30px);
+  transition: ${DEFAULT_TRANSITION}s;
+  z-index: 10;
 
   &:hover {
     background-color: darkgray;
@@ -135,6 +136,7 @@ const StyledHeaderMenu = styled.div`
 `;
 
 const ContentWrapper = styled.div`
+  // @MAYBE_TODO: высоты шалят, тут должно считаться само
   height: ${TOP_DRAWER_HEIGHT - 44 - 32}px;
   overflow-y: auto;
 `;
