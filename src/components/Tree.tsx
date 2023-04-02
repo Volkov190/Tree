@@ -87,7 +87,6 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
       <ReactFlowWrapper itemCount={itemCount + additionalCount}>
         <ReactFlow
           className="nowheel"
-          onLoad={(node) => console.log(node)}
           nodes={nodes}
           edges={edges}
           onNodeClick={(_value, { data: nodeData }) => onSelectItem(nodeData)}

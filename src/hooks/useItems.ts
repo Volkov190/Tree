@@ -2,8 +2,8 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../app/store';
 
-import { selectItem, changeItem as changeItemStore } from '../slices/items';
-import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem } from '../types/item';
+import { selectItem, changeItem as changeItemStore, changeItems as changeItemsStore } from '../slices/items';
+import { GroupItem, isCluster, isGroup, Item, Kind, ProductItem, History, isProduct } from '../types/item';
 
 const useItems = () => {
   const { value: items } = useSelector((state: RootState) => state.items);
@@ -47,6 +47,10 @@ const useItems = () => {
       items.filter((item) => itemUuidsWithoutRelation.includes(item.uuid)),
       items.filter((item) => itemUuidsWithRelation.includes(item.uuid)),
     ];
+  }, [items]);
+
+  const products = useMemo(() => {
+    return items.filter(isProduct);
   }, [items]);
 
   const groups = useMemo(() => {
@@ -113,8 +117,16 @@ const useItems = () => {
     [dispatch],
   );
 
+  const changeGroupItems = useCallback(
+    (historyItems: History) => {
+      dispatch(changeItemsStore(historyItems));
+    },
+    [dispatch],
+  );
+
   return {
     items,
+    products,
     groups,
     clusters,
     itemsWithoutRelations,
@@ -124,6 +136,7 @@ const useItems = () => {
     onSelectItem,
     changeProductItem,
     changeGroupItem,
+    changeGroupItems,
   };
 };
 

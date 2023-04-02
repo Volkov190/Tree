@@ -28,7 +28,6 @@ export const itemsSlice = createSlice({
   reducers: {
     changeItem: (state, action: PayloadAction<HistoryNode>) => {
       const { beforeChangeItem, afterChangeItem } = action.payload;
-
       state.value = state.value
         .map((item) => {
           if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
@@ -39,6 +38,25 @@ export const itemsSlice = createSlice({
         .filter((item): item is Item => item !== null);
       state.selectedItem = afterChangeItem;
       state.histories = [...state.histories, [action.payload]];
+    },
+
+    changeItems: (state, action: PayloadAction<History>) => {
+      const history = action.payload;
+      history.forEach(({ beforeChangeItem, afterChangeItem }) => {
+        state.value = state.value
+          .map((item) => {
+            if (item.kind === beforeChangeItem.kind && item.uuid === beforeChangeItem.uuid) {
+              return afterChangeItem;
+            }
+            return item;
+          })
+          .filter((item): item is Item => item !== null);
+
+        if (state.selectedItem?.uuid === beforeChangeItem.uuid && state.selectedItem?.kind === beforeChangeItem.kind) {
+          state.selectedItem = afterChangeItem;
+        }
+      });
+      state.histories = [...state.histories, history];
     },
 
     selectItem: (state, action: PayloadAction<Item | null | undefined>) => {
@@ -81,6 +99,6 @@ export const itemsSlice = createSlice({
   },
 });
 
-export const { changeItem, undoLastChange, selectItem } = itemsSlice.actions;
+export const { changeItem, changeItems, undoLastChange, selectItem } = itemsSlice.actions;
 
 export default itemsSlice.reducer;
