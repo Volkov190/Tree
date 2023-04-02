@@ -5,8 +5,8 @@ import { NODE_HEIGHT, NODE_SCALE, NODE_STEP_HEIGHT, NODE_STEP_WIDTH, NODE_WIDTH 
 
 import { useLayout } from '../hooks/useLayout';
 import '../index.css';
-import useItems from '../hooks/useItems';
 import { isGroup, isProduct, Item, Kind } from '../types/item';
+import useItems from '../hooks/useItems';
 
 interface TreeProps {
   tree: Item[];
@@ -82,8 +82,6 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
   }, [flow, tree]);
 
   const itemCount = useMemo(() => tree.filter((item) => item.kind === Kind.ITEM).length, [tree]);
-
-  // const stiledButtons = styled
 
   return (
     <div className={`d-inline-block ${className || ''}`}>
