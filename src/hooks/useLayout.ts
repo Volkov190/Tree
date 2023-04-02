@@ -1,11 +1,9 @@
-import * as d3 from 'd3-hierarchy';
+import { tree, stratify } from 'd3-hierarchy';
 import { useMemo } from 'react';
 import { Edge, Node, Position } from 'reactflow';
-import {Item, ItemId, Kind} from '../types/item';
+import { NODE_HEIGHT, NODE_STEP_HEIGHT, NODE_WIDTH, NODE_STEP_WIDTH } from '../const/tree';
+import { Item, ItemId } from '../types/item';
 import { useNodesEdges } from './useNodesEdges';
-
-const nodeWidth = 172;
-const nodeHeight = 26;
 
 const getLayoutedElements = (nodes: Node<Item>[], edges: Edge[]) => {
   if (!nodes.length || !edges.length) return { nodes, edges };
@@ -16,13 +14,15 @@ const getLayoutedElements = (nodes: Node<Item>[], edges: Edge[]) => {
     newArray.push(edge.source);
     map.set(edge.target, newArray);
   });
-  const root = d3
-    .stratify()
+  const root = stratify()
     .id((d) => (d as Node<Item>).id)
     .parentId((d) => map.get((d as Node<Item>).id) as any)(nodes);
-  const tree = d3.tree().nodeSize([nodeHeight * 2.5, nodeWidth * 1.5])(root);
+  const itemsTree = tree()
+    // @NOTE: расстояние между продуктами константное
+    .separation(() => 1)
+    .nodeSize([NODE_HEIGHT + NODE_STEP_HEIGHT, NODE_WIDTH + NODE_STEP_WIDTH])(root);
   const newNodes: Node<Item>[] = [];
-  tree.each((node1) => {
+  itemsTree.each((node1) => {
     const node = node1 as d3.HierarchyPointNode<Node<Item>>;
     node.data.targetPosition = Position.Left;
     node.data.sourcePosition = Position.Right;
@@ -35,8 +35,8 @@ const getLayoutedElements = (nodes: Node<Item>[], edges: Edge[]) => {
   return { nodes, edges };
 };
 
-export const useLayout = () => {
-  const nodesEdges = useNodesEdges();
+export const useLayout = (items: Item[]) => {
+  const nodesEdges = useNodesEdges(items);
 
   const result = useMemo(() => {
     const targetIds = new Set<ItemId>();

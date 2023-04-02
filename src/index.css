@@ -11,12 +11,6 @@ body {
   height: 100%;
 }
 
-.layoutflow {
-  flex-direction: column;
-  display: flex;
-  flex-grow: 1;
-}
-
 .layoutflow > div {
   z-index: -1 !important;
 }

@@ -58,6 +58,23 @@ const useItems = () => {
     return items.filter(isCluster);
   }, [items]);
 
+  const trees = useMemo(() => {
+    const clustersWithRelations = itemsWithRelations.filter((item) => item.kind === Kind.CLUSTER);
+
+    return clustersWithRelations.map((cluster) => {
+      const usedGroups = itemsWithRelations.filter(
+        (item) => item.kind === Kind.GROUP && item.clusterUuid === cluster.uuid,
+      );
+      const usedProducts = itemsWithRelations.filter(
+        (item) => item.kind === Kind.ITEM && usedGroups.map((group) => group.uuid).includes(item.groupUuid || ''),
+      );
+
+      return [cluster, ...usedGroups, ...usedProducts];
+    });
+  }, [itemsWithRelations]);
+
+  console.log(trees);
+
   const onSelectItem = useCallback(
     (item?: Item | null) => {
       dispatch(selectItem(item));
@@ -90,6 +107,7 @@ const useItems = () => {
     itemsWithoutRelations,
     itemsWithRelations,
     selectedItem,
+    trees,
     onSelectItem,
     changeProductItem,
     changeGroupItem,
