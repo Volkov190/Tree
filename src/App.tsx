@@ -7,6 +7,7 @@ import useItems from './hooks/useItems';
 import Sidebar from './components/Sidebar';
 import TopDrawer, { TOP_DRAWER_HEIGHT } from './components/TopDrawer';
 import styled from 'styled-components';
+import { DEFAULT_TRANSITION } from './const/tree';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -36,7 +37,7 @@ const TreesWrapper = styled.div``;
 
 const StyledTopDrawer = styled(TopDrawer)<{ isOpen: boolean }>`
   height: ${({ isOpen }) => (isOpen ? TOP_DRAWER_HEIGHT : 0)}px;
-  transition: height 0.2s;
+  transition: height ${DEFAULT_TRANSITION}s;
 `;
 
 export default App;

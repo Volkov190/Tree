@@ -63,6 +63,7 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
           zoomOnScroll={false}
           zoomOnPinch={false}
           nodesDraggable={false}
+          zoomOnDoubleClick={false}
         />
         {isLoading && <Loader />}
       </ReactFlowWrapper>
@@ -87,6 +88,34 @@ const ReactFlowWrapper = styled.div<{ itemCount: number }>`
   width: ${NODE_SCALE * (NODE_WIDTH * 3 + NODE_STEP_WIDTH * 2)}px;
   height: ${({ itemCount }) => NODE_SCALE * (NODE_HEIGHT * itemCount + NODE_STEP_HEIGHT * (itemCount - 1))}px;
   position: relative;
+  .react-flow__panel {
+    display: none;
+  }
+
+  .react-flow {
+  }
+
+  .react-flow__node {
+    border-radius: 3px;
+    padding: 10px;
+    text-transform: capitalize;
+  }
+  .react-flow__node.selectable:hover {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+
+  .react-flow__node-default {
+    border: 1px solid blue;
+  }
+
+  .react-flow__node-input {
+    border: 2px solid #ff00ff;
+  }
+
+  .react-flow__handle:hover {
+    background-color: #575452;
+  }
 `;
 
 export default memo(Tree);
