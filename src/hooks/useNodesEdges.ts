@@ -29,7 +29,7 @@ function getId(item: Item) {
 
 export const useNodesEdges = (items: Item[], options?: { isWithoutProducts?: boolean; isWithoutCluster?: boolean }) => {
   const { isWithoutProducts, isWithoutCluster } = options || {};
-  const { products, groups, clusters } = useItems();
+  const { groups, clusters } = useItems();
 
   const nodes = useMemo(() => {
     const resNodes = items.map(
@@ -45,6 +45,7 @@ export const useNodesEdges = (items: Item[], options?: { isWithoutProducts?: boo
     if (isWithoutProducts || isWithoutCluster) {
       resNodes.push({
         id: EMPTY_NODE_ID,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: { label: '' } as any,
         position: { x: 0, y: 0 },
         style: { visibility: 'hidden' },
@@ -74,6 +75,7 @@ export const useNodesEdges = (items: Item[], options?: { isWithoutProducts?: boo
       .map((item): Edge => {
         const itemId = getId(item);
         const itemParentId = parentsMap.get(itemId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (!itemParentId) return null as any;
         return {
           id: `e${itemId}${itemParentId}`,

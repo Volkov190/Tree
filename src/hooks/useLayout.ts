@@ -16,6 +16,7 @@ const getLayoutedElements = (nodes: Node<Item>[], edges: Edge[]) => {
   });
   const root = stratify()
     .id((d) => (d as Node<Item>).id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .parentId((d) => map.get((d as Node<Item>).id) as any)(nodes);
   const itemsTree = tree()
     // @NOTE: расстояние между продуктами константное
