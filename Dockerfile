@@ -27,7 +27,8 @@ RUN npm run build
 # @description: Запуск собранного приложения
 FROM nginx:stable-alpine AS runner
 
-ARG SERVICE_PATH
+EXPOSE 80
+
 WORKDIR /usr/share/nginx/html
 
 RUN rm -rf /usr/share/nginx/html/*
