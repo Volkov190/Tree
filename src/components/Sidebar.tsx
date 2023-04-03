@@ -52,7 +52,14 @@ const Sidebar: FC = () => {
             beforeChangeItem: item,
             afterChangeItem: { ...item, groupUuid: null },
           })),
-        { beforeChangeItem: selectedItem, afterChangeItem: { ...selectedItem, clusterUuid: newCluster?.uuid || null } },
+        ...(newCluster !== undefined
+          ? [
+              {
+                beforeChangeItem: selectedItem,
+                afterChangeItem: { ...selectedItem, clusterUuid: newCluster?.uuid || null },
+              },
+            ]
+          : []),
       ]);
       setNewProducts(undefined);
     }
