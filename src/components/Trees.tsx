@@ -1,10 +1,10 @@
 import { FC, memo } from 'react';
 import { ReactFlowProvider } from 'reactflow';
-import useItems from '../hooks/useItems';
+import useTrees from '../hooks/useTrees';
 import Tree from './Tree';
 
 const Trees: FC = () => {
-  const { fullTrees, treesWithoutProducts, treesWithoutClusters } = useItems();
+  const { fullTrees, treesWithoutProducts, treesWithoutClusters } = useTrees();
 
   return (
     <>

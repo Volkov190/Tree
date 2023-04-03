@@ -66,6 +66,14 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
     return testNumber;
   }, [tree]);
 
+  const itemCount = useMemo(() => {
+    if (isWithoutProducts) {
+      return tree.filter(isGroup).length;
+    } else {
+      return tree.filter(isProduct).length;
+    }
+  }, [isWithoutProducts, tree]);
+
   useEffect(() => {
     setNodes(layout.nodes);
   }, [layout.nodes, setNodes]);
@@ -82,14 +90,6 @@ const Tree: FC<TreeProps> = ({ tree, className }) => {
       setIsLoading(false);
     }, 500);
   }, [flow, tree]);
-
-  const itemCount = useMemo(() => {
-    if (isWithoutProducts) {
-      return tree.filter(isGroup).length;
-    } else {
-      return tree.filter(isProduct).length;
-    }
-  }, [isWithoutProducts, tree]);
 
   return (
     <div className={`d-inline-block ${className || ''}`}>
