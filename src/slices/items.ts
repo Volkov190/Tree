@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { isEqual } from 'lodash';
 import fetchItems from '../fetchers/fetchItems';
 import { GroupItem, History, HistoryNode, isCluster, isGroup, isProduct, Item, Kind, ProductItem } from '../types/item';
 
@@ -52,12 +53,13 @@ export const itemsSlice = createSlice({
           })
           .filter((item): item is Item => item !== null);
 
-        if (state.selectedItem?.uuid === beforeChangeItem.uuid && state.selectedItem?.kind === beforeChangeItem.kind) {
+        if (isEqual(state.selectedItem, beforeChangeItem)) {
           state.selectedItem = afterChangeItem;
         }
       });
       state.histories = [...state.histories, history];
     },
+
     deleteUnimportantItems: (state) => {
       const unimportantClusters = state.value.filter(isCluster).filter((cluster) => !cluster.important);
       const unimportantGroups = state.value.filter(isGroup).filter((cluster) => !cluster.important);
@@ -105,6 +107,10 @@ export const itemsSlice = createSlice({
 
       const history = state.histories[state.histories.length - 1];
       history.forEach(({ afterChangeItem, beforeChangeItem }) => {
+        if (isEqual(afterChangeItem, state.selectedItem)) {
+          state.selectedItem = beforeChangeItem;
+        }
+
         if (afterChangeItem === null) {
           return (state.value = [...state.value, beforeChangeItem]);
         }

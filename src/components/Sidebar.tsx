@@ -34,11 +34,12 @@ const Sidebar: FC = () => {
       changeProductItem(selectedItem, { groupUuid: newGroup?.uuid || null });
     }
     if (selectedItem?.kind === Kind.GROUP) {
-      if (newCluster !== undefined) {
+      if (newCluster !== undefined && !newProducts) {
         onChangeGroupItem(selectedItem, { clusterUuid: newCluster?.uuid || null });
       }
 
       if (!newProducts) return;
+
       const selectedProducts = products.filter((item) => item.groupUuid === selectedItem.uuid);
       onChangeGroupItems([
         ...newProducts.map((item) => ({
@@ -51,6 +52,7 @@ const Sidebar: FC = () => {
             beforeChangeItem: item,
             afterChangeItem: { ...item, groupUuid: null },
           })),
+        { beforeChangeItem: selectedItem, afterChangeItem: { ...selectedItem, clusterUuid: newCluster?.uuid || null } },
       ]);
       setNewProducts(undefined);
     }
