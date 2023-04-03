@@ -198,7 +198,7 @@ const Sidebar: FC = () => {
         </div>
         <div className="mb-2">
           <input type="checkbox" readOnly checked={selectedItem.important} />
-          {selectedItem.important ? 'Значимый' : 'Не значимый'}
+          {selectedItem.important ? 'Значимый' : 'Незначимый'}
         </div>
         <ItemContent />
         <div className="flex-grow-1"></div>
