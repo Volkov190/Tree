@@ -10,8 +10,9 @@ import styled from 'styled-components';
 import { DEFAULT_TRANSITION } from './const/tree';
 
 import Button from './components/Button';
-import { BackIcon, DeleteOutline, SaveOutline } from './assets/icons';
+import { BackIcon, DeleteOutline, SaveOutline, HelpOutline } from './assets/icons';
 import { isImportantItem } from './types/item';
+import HelpModal from './components/HelpModal';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,10 +25,12 @@ function App() {
     itemsWithoutRelations,
   } = useItems();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchItemsThunk());
   }, [dispatch]);
+  console.log(isModalOpen);
 
   return (
     <div className="d-flex h-100 w-100">
@@ -63,6 +66,9 @@ function App() {
             >
               <SaveOutline />
             </Button>
+            <Button className="m-2" tooltipText="FAQ" onClick={() => setIsModalOpen(true)} isIconButton>
+              <HelpOutline />
+            </Button>
           </ControlsWrapper>
           <ScrollWrapper className="d-flex flex-column align-items-center py-3">
             <Trees />
@@ -70,6 +76,7 @@ function App() {
         </TreesWrapper>
       </div>
       {selectedItem && <Sidebar />}
+      {isModalOpen && <HelpModal onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 }
